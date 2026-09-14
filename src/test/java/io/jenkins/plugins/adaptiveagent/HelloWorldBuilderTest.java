@@ -1,4 +1,4 @@
-package io.jenkins.plugins.sample;
+package io.jenkins.plugins.adaptiveagent;
 
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
