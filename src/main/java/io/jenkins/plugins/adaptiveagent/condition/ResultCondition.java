@@ -1,7 +1,10 @@
-package io.jenkins.plugins.adaptiveagent;
+package io.jenkins.plugins.adaptiveagent.condition;
 
 import hudson.Extension;
 import hudson.model.Result;
+import io.jenkins.plugins.adaptiveagent.Phase;
+import io.jenkins.plugins.adaptiveagent.TaskContext;
+import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**

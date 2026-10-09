@@ -1,7 +1,10 @@
-package io.jenkins.plugins.adaptiveagent;
+package io.jenkins.plugins.adaptiveagent.action;
 
 import hudson.AbortException;
 import hudson.Extension;
+import io.jenkins.plugins.adaptiveagent.TaskContext;
+import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
+import io.jenkins.plugins.adaptiveagent.util.ScriptRunner;
 import java.io.IOException;
 import org.kohsuke.stapler.DataBoundConstructor;
 

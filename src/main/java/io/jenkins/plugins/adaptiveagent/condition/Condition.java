@@ -1,7 +1,9 @@
-package io.jenkins.plugins.adaptiveagent;
+package io.jenkins.plugins.adaptiveagent.condition;
 
 import hudson.ExtensionPoint;
 import hudson.model.Describable;
+import io.jenkins.plugins.adaptiveagent.TaskContext;
+import io.jenkins.plugins.adaptiveagent.action.Action;
 
 /**
  * A condition deciding whether an {@link Action} should run.

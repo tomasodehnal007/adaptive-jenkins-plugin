@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.model.Node;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
+import io.jenkins.plugins.adaptiveagent.entry.BuildEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

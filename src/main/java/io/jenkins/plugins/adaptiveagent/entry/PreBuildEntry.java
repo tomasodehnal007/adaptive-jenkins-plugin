@@ -1,10 +1,13 @@
-package io.jenkins.plugins.adaptiveagent;
+package io.jenkins.plugins.adaptiveagent.entry;
 
 import hudson.Extension;
+import io.jenkins.plugins.adaptiveagent.Phase;
+import io.jenkins.plugins.adaptiveagent.action.Action;
+import io.jenkins.plugins.adaptiveagent.condition.Condition;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-/** A task that runs after a build has finished on the agent. */
-public class PostBuildEntry extends BuildEntry {
+/** A task that runs before a build starts on the agent. */
+public class PreBuildEntry extends BuildEntry {
 
     /**
      * Creates the entry; Jenkins calls this when the agent's configuration form is saved.
@@ -13,18 +16,18 @@ public class PostBuildEntry extends BuildEntry {
      * @param action what is done on the agent
      */
     @DataBoundConstructor
-    public PostBuildEntry(Condition condition, Action action) {
+    public PreBuildEntry(Condition condition, Action action) {
         super(condition, action);
     }
 
     /**
      * {@inheritDoc}
      *
-     * @return {@link Phase#POST_BUILD}
+     * @return {@link Phase#PRE_BUILD}
      */
     @Override
     public Phase getPhase() {
-        return Phase.POST_BUILD;
+        return Phase.PRE_BUILD;
     }
 
     /** Describes this entry type; its display name is the item offered in the "Add task" menu. */
@@ -37,16 +40,16 @@ public class PostBuildEntry extends BuildEntry {
         /**
          * {@inheritDoc}
          *
-         * @return {@link Phase#POST_BUILD}
+         * @return {@link Phase#PRE_BUILD}
          */
         @Override
         public Phase getPhase() {
-            return Phase.POST_BUILD;
+            return Phase.PRE_BUILD;
         }
 
         @Override
         public String getDisplayName() {
-            return "Action run after build";
+            return "Action run before build";
         }
     }
 }

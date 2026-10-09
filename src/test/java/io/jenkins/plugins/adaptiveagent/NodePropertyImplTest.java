@@ -4,6 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import hudson.model.Descriptor;
 import hudson.slaves.DumbSlave;
+import io.jenkins.plugins.adaptiveagent.action.ShellScriptAction;
+import io.jenkins.plugins.adaptiveagent.condition.NoCondition;
+import io.jenkins.plugins.adaptiveagent.condition.ResultCondition;
+import io.jenkins.plugins.adaptiveagent.entry.BuildEntry;
+import io.jenkins.plugins.adaptiveagent.entry.DuringBuildEntry;
+import io.jenkins.plugins.adaptiveagent.entry.PostBuildEntry;
+import io.jenkins.plugins.adaptiveagent.entry.PreBuildEntry;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

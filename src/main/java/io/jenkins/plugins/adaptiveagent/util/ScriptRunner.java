@@ -1,12 +1,13 @@
-package io.jenkins.plugins.adaptiveagent;
+package io.jenkins.plugins.adaptiveagent.util;
 
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Node;
+import io.jenkins.plugins.adaptiveagent.TaskContext;
 import java.io.IOException;
 
 /** Runs a shell script on the agent. */
-final class ScriptRunner {
+public final class ScriptRunner {
 
     private ScriptRunner() {}
 
@@ -25,7 +26,7 @@ final class ScriptRunner {
      * @throws IOException if the process cannot be started
      * @throws InterruptedException if the thread is interrupted while waiting for the script
      */
-    static int run(TaskContext context, String script) throws IOException, InterruptedException {
+    public static int run(TaskContext context, String script) throws IOException, InterruptedException {
         Launcher launcher = context.launcher();
         String[] command = launcher.isUnix() ? new String[] {"sh", "-c", script} : new String[] {"cmd", "/c", script};
 

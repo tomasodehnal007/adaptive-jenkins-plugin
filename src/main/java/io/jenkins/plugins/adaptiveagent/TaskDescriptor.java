@@ -2,6 +2,8 @@ package io.jenkins.plugins.adaptiveagent;
 
 import hudson.model.Describable;
 import hudson.model.Descriptor;
+import io.jenkins.plugins.adaptiveagent.action.Action;
+import io.jenkins.plugins.adaptiveagent.condition.Condition;
 import java.util.ArrayList;
 import java.util.List;
 import jenkins.model.Jenkins;

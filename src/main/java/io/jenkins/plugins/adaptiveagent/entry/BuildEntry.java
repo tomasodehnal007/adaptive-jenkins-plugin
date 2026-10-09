@@ -1,7 +1,11 @@
-package io.jenkins.plugins.adaptiveagent;
+package io.jenkins.plugins.adaptiveagent.entry;
 
 import hudson.model.Describable;
 import hudson.model.Descriptor;
+import io.jenkins.plugins.adaptiveagent.Phase;
+import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
+import io.jenkins.plugins.adaptiveagent.action.Action;
+import io.jenkins.plugins.adaptiveagent.condition.Condition;
 import java.util.List;
 
 /**

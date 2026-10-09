@@ -1,7 +1,9 @@
-package io.jenkins.plugins.adaptiveagent;
+package io.jenkins.plugins.adaptiveagent.action;
 
 import hudson.ExtensionPoint;
 import hudson.model.Describable;
+import io.jenkins.plugins.adaptiveagent.TaskContext;
+import io.jenkins.plugins.adaptiveagent.condition.Condition;
 
 /**
  * Something done on the agent (run a script, clean the workspace, ...).

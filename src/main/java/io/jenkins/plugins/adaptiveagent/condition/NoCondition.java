@@ -1,6 +1,8 @@
-package io.jenkins.plugins.adaptiveagent;
+package io.jenkins.plugins.adaptiveagent.condition;
 
 import hudson.Extension;
+import io.jenkins.plugins.adaptiveagent.TaskContext;
+import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /** Condition without parameters: the action always runs. */

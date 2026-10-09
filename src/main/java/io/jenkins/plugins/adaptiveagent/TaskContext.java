@@ -6,6 +6,8 @@ import hudson.Launcher;
 import hudson.model.Computer;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import io.jenkins.plugins.adaptiveagent.action.Action;
+import io.jenkins.plugins.adaptiveagent.condition.Condition;
 
 /**
  * Describes the build a task runs in: the build itself, the agent it runs on, a launcher for starting
