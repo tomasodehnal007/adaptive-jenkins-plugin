@@ -1,0 +1,11 @@
+<?jelly escape-by-default='true'?>
+<!-- Shown in the "Node Properties" section of an agent's Configure page. -->
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+  <f:section title="Adaptive agent tasks">
+    <f:entry field="entries">
+      <!-- List of mixed entry types: "Add task" offers every BuildEntry subclass
+           (before / during / after build). The entries have no fields yet, so a row shows only its name. -->
+      <f:repeatableHeteroProperty hasHeader="true" addCaption="Add task"/>
+    </f:entry>
+  </f:section>
+</j:jelly>

@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    TODO
+    Lets you configure tasks that run on a specific agent before, during or after any build it executes.
 </div>
