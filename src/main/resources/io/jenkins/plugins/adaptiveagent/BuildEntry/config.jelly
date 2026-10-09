@@ -1,0 +1,7 @@
+<?jelly escape-by-default='true'?>
+<!-- Shared by every entry type (Jenkins looks for config.jelly in the class and its superclasses).
+     Each dropdown lists all registered conditions / actions and shows the form of the chosen one. -->
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+  <f:dropdownDescriptorSelector field="condition" title="Condition"/>
+  <f:dropdownDescriptorSelector field="action" title="Action"/>
+</j:jelly>

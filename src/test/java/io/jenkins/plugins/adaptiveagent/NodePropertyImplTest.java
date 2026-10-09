@@ -13,8 +13,10 @@ class NodePropertyImplTest {
     @Test
     void configRoundtrip(JenkinsRule jenkins) throws Exception {
         DumbSlave agent = jenkins.createSlave();
-        NodePropertyImpl property =
-                new NodePropertyImpl(List.of(new PreBuildEntry(), new DuringBuildEntry(), new PostBuildEntry()));
+        NodePropertyImpl property = new NodePropertyImpl(List.of(
+                new PreBuildEntry(new NoCondition(), new ShellScriptAction("echo before")),
+                new DuringBuildEntry(new NoCondition(), new ShellScriptAction("echo during")),
+                new PostBuildEntry(new NoCondition(), new ShellScriptAction("echo after"))));
         agent.setNodeProperties(List.of(property));
 
         DumbSlave reloaded = jenkins.configRoundtrip(agent);
