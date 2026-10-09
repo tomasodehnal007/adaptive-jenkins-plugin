@@ -11,7 +11,7 @@ import hudson.model.TaskListener;
  * Describes the build a task runs in: the build itself, the agent it runs on, a launcher for starting
  * processes on that agent, the build log and the workspace.
  *
- * <p>It is passed to every {@link Condition} and {@code Action}, so they do not depend on the type of the
+ * <p>It is passed to every {@link Condition} and {@link Action}, so they do not depend on the type of the
  * job (Freestyle, Pipeline) that started the build.
  *
  * @param run the build being run
