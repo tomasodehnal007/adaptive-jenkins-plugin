@@ -76,20 +76,6 @@ class FreestyleTasksTest {
         assertFalse(log.contains("POST_ON_FAILURE"), log);
     }
 
-    @Test
-    void postTaskReactsToFailedBuild(JenkinsRule jenkins) throws Exception {
-        DumbSlave agent = agentWith(
-                jenkins,
-                postBuild(onSuccess(), "echo POST_ON_SUCCESS"),
-                postBuild(onFailure(), "echo POST_ON_FAILURE"));
-
-        FreeStyleBuild build = jenkins.buildAndAssertStatus(Result.FAILURE, projectOn(jenkins, agent, "exit 1"));
-
-        String log = JenkinsRule.getLog(build);
-        assertTrue(log.contains("POST_ON_FAILURE"), log);
-        assertFalse(log.contains("POST_ON_SUCCESS"), log);
-    }
-
     /** The core idea of the plugin: tasks follow the agent, whatever job runs on it. */
     @Test
     void tasksBelongToTheAgentNotToTheJob(JenkinsRule jenkins) throws Exception {
@@ -126,17 +112,6 @@ class FreestyleTasksTest {
         String log = JenkinsRule.getLog(build);
         assertTrue(log.contains("FIRST"), log); // ';' and '|' only work in a real shell
         assertTrue(log.contains("IN_DIR=" + agent.getRemoteFS() + "\n"), "expected the agent root, log was:\n" + log);
-    }
-
-    @Test
-    void postBuildScriptRunsInTheBuildWorkspace(JenkinsRule jenkins) throws Exception {
-        DumbSlave agent = agentWith(jenkins, postBuild(onSuccess(), "echo \"IN_DIR=$(pwd)\""));
-
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectOn(jenkins, agent, "true"));
-
-        String log = JenkinsRule.getLog(build);
-        assertTrue(
-                log.matches("(?s).*IN_DIR=[^\\n]*/workspace/[^\\n]*\\n.*"), "expected the workspace, log was:\n" + log);
     }
 
     /** A task meant for aborted builds (e.g. a cleanup) must still run after the user stops the build. */

@@ -1,39 +1,51 @@
 package io.jenkins.plugins.adaptiveagent.condition;
 
-import static io.jenkins.plugins.adaptiveagent.TestSupport.agentWith;
 import static io.jenkins.plugins.adaptiveagent.TestSupport.countLines;
-import static io.jenkins.plugins.adaptiveagent.TestSupport.echo;
-import static io.jenkins.plugins.adaptiveagent.TestSupport.pre;
-import static io.jenkins.plugins.adaptiveagent.TestSupport.projectOn;
+import static io.jenkins.plugins.adaptiveagent.TestSupport.localContext;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import hudson.model.FreeStyleBuild;
-import hudson.slaves.DumbSlave;
+import hudson.Functions;
+import io.jenkins.plugins.adaptiveagent.TaskContext;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
+import org.junit.jupiter.api.io.TempDir;
 
-@WithJenkins
+/** Evaluates the condition directly on this machine, without Jenkins. */
 class ScriptConditionTest {
 
-    @Test
-    void actionRunsWhenTheScriptExitsWithZero(JenkinsRule jenkins) throws Exception {
-        DumbSlave agent =
-                agentWith(jenkins, pre(new ScriptCondition("echo CONDITION_OUTPUT; exit 0"), echo("ACTION_RAN")));
+    @TempDir
+    Path workspace;
 
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectOn(jenkins, agent, "true"));
+    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private TaskContext context;
 
-        String log = JenkinsRule.getLog(build);
-        assertEquals(1, countLines(log, "ACTION_RAN"), log);
-        assertEquals(1, countLines(log, "CONDITION_OUTPUT"), "the output of the script goes to the build log:\n" + log);
+    @BeforeEach
+    void setUp() {
+        Assumptions.assumeFalse(Functions.isWindows(), "the scripts use sh");
+        context = localContext(workspace, out);
     }
 
     @Test
-    void actionIsSkippedWhenTheScriptExitsWithNonZero(JenkinsRule jenkins) throws Exception {
-        DumbSlave agent = agentWith(jenkins, pre(new ScriptCondition("exit 1"), echo("ACTION_RAN")));
+    void passesWhenTheScriptExitsWithZero() throws Exception {
+        assertTrue(new ScriptCondition("exit 0").conditionPasses(context));
+    }
 
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectOn(jenkins, agent, "true"));
+    @Test
+    void doesNotPassWhenTheScriptExitsWithNonZero() throws Exception {
+        assertFalse(new ScriptCondition("exit 1").conditionPasses(context));
+    }
 
-        assertEquals(0, countLines(JenkinsRule.getLog(build), "ACTION_RAN"));
+    @Test
+    void outputOfTheScriptGoesToTheLog() throws Exception {
+        new ScriptCondition("echo CONDITION_OUTPUT").conditionPasses(context);
+
+        context.listener().getLogger().flush();
+        assertEquals(1, countLines(out.toString(StandardCharsets.UTF_8), "CONDITION_OUTPUT"));
     }
 }

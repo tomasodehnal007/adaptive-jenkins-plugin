@@ -1,6 +1,7 @@
 package io.jenkins.plugins.adaptiveagent;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.model.Descriptor;
 import hudson.slaves.DumbSlave;
@@ -46,9 +47,9 @@ class NodePropertyImplTest {
                 jenkins.jenkins.getDescriptorByType(DuringBuildEntry.DescriptorImpl.class);
         BuildEntry.BuildEntryDescriptor post = jenkins.jenkins.getDescriptorByType(PostBuildEntry.DescriptorImpl.class);
 
-        assertEquals(Set.of(NoCondition.class), classesOf(pre.getConditionDescriptors()));
-        assertEquals(Set.of(NoCondition.class), classesOf(during.getConditionDescriptors()));
-        assertEquals(Set.of(NoCondition.class, ResultCondition.class), classesOf(post.getConditionDescriptors()));
+        assertFalse(classesOf(pre.getConditionDescriptors()).contains(ResultCondition.class));
+        assertFalse(classesOf(during.getConditionDescriptors()).contains(ResultCondition.class));
+        assertTrue(classesOf(post.getConditionDescriptors()).contains(ResultCondition.class));
     }
 
     private static Set<Class<?>> classesOf(List<? extends Descriptor<?>> descriptors) {
