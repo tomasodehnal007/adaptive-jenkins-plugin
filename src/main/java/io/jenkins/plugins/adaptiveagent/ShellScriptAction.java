@@ -2,7 +2,6 @@ package io.jenkins.plugins.adaptiveagent;
 
 import hudson.AbortException;
 import hudson.Extension;
-import hudson.model.Descriptor;
 import java.io.IOException;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -48,7 +47,7 @@ public class ShellScriptAction extends Action {
 
     /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
     @Extension
-    public static final class DescriptorImpl extends Descriptor<Action> {
+    public static final class DescriptorImpl extends TaskDescriptor<Action> {
 
         /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
         public DescriptorImpl() {}

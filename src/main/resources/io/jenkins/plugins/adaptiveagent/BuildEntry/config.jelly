@@ -1,7 +1,8 @@
 <?jelly escape-by-default='true'?>
 <!-- Shared by every entry type (Jenkins looks for config.jelly in the class and its superclasses).
-     Each dropdown lists all registered conditions / actions and shows the form of the chosen one. -->
+     Here "descriptor" is the descriptor of the entry type being drawn, so each dropdown lists only
+     the conditions / actions applicable in that entry's phase. -->
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-  <f:dropdownDescriptorSelector field="condition" title="Condition"/>
-  <f:dropdownDescriptorSelector field="action" title="Action"/>
+  <f:dropdownDescriptorSelector field="condition" title="Condition" descriptors="${descriptor.conditionDescriptors}"/>
+  <f:dropdownDescriptorSelector field="action" title="Action" descriptors="${descriptor.actionDescriptors}"/>
 </j:jelly>
