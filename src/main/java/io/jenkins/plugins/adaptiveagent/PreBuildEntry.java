@@ -7,9 +7,16 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /** A task that runs before a build starts on the agent. */
 public class PreBuildEntry extends BuildEntry {
 
-    /** Creates the entry; Jenkins calls this when the agent's configuration form is saved. */
+    /**
+     * Creates the entry; Jenkins calls this when the agent's configuration form is saved.
+     *
+     * @param condition decides whether the action runs
+     * @param action what is done on the agent
+     */
     @DataBoundConstructor
-    public PreBuildEntry() {}
+    public PreBuildEntry(Condition condition, Action action) {
+        super(condition, action);
+    }
 
     /**
      * {@inheritDoc}

@@ -7,9 +7,16 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /** A task that runs while a build is running on the agent. */
 public class DuringBuildEntry extends BuildEntry {
 
-    /** Creates the entry; Jenkins calls this when the agent's configuration form is saved. */
+    /**
+     * Creates the entry; Jenkins calls this when the agent's configuration form is saved.
+     *
+     * @param condition decides whether the action runs
+     * @param action what is done on the agent
+     */
     @DataBoundConstructor
-    public DuringBuildEntry() {}
+    public DuringBuildEntry(Condition condition, Action action) {
+        super(condition, action);
+    }
 
     /**
      * {@inheritDoc}

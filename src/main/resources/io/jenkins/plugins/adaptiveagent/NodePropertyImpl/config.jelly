@@ -4,7 +4,7 @@
   <f:section title="Adaptive agent tasks">
     <f:entry field="entries">
       <!-- List of mixed entry types: "Add task" offers every BuildEntry subclass
-           (before / during / after build). The entries have no fields yet, so a row shows only its name. -->
+           (before / during / after build). Each row is drawn by BuildEntry/config.jelly. -->
       <f:repeatableHeteroProperty hasHeader="true" addCaption="Add task"/>
     </f:entry>
   </f:section>

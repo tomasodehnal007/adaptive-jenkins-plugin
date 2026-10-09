@@ -7,9 +7,16 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /** A task that runs after a build has finished on the agent. */
 public class PostBuildEntry extends BuildEntry {
 
-    /** Creates the entry; Jenkins calls this when the agent's configuration form is saved. */
+    /**
+     * Creates the entry; Jenkins calls this when the agent's configuration form is saved.
+     *
+     * @param condition decides whether the action runs
+     * @param action what is done on the agent
+     */
     @DataBoundConstructor
-    public PostBuildEntry() {}
+    public PostBuildEntry(Condition condition, Action action) {
+        super(condition, action);
+    }
 
     /**
      * {@inheritDoc}
