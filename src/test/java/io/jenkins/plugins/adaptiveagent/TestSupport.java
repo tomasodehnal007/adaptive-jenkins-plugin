@@ -2,7 +2,11 @@ package io.jenkins.plugins.adaptiveagent;
 
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.Result;
 import hudson.model.TaskListener;
 import hudson.slaves.DumbSlave;
 import hudson.tasks.Shell;
@@ -18,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.TestBuilder;
 
 /** Small helpers shared by the tests. */
 public final class TestSupport {
@@ -68,5 +73,18 @@ public final class TestSupport {
         TaskListener listener = new StreamTaskListener(log, StandardCharsets.UTF_8);
         return new TaskContext(
                 null, null, new Launcher.LocalLauncher(listener), listener, new FilePath(workspace.toFile()));
+    }
+
+    /** Runs a new job on the built-in node; the build ends with the given result. */
+    public static FreeStyleBuild buildWithResult(JenkinsRule jenkins, Result result) throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject();
+        project.getBuildersList().add(new TestBuilder() {
+            @Override
+            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
+                build.setResult(result);
+                return true;
+            }
+        });
+        return jenkins.assertBuildStatus(result, project.scheduleBuild2(0));
     }
 }
