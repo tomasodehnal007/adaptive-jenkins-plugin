@@ -3,9 +3,9 @@ package io.jenkins.plugins.adaptiveagent.util;
 /** Unit of a disk size entered in the form. */
 public enum SizeUnit {
     /** Mebibyte, 1024 * 1024 bytes. */
-    MB("MB", 1024L * 1024L),
+    MIB("MiB", 1024L * 1024L),
     /** Gibibyte, 1024 * 1024 * 1024 bytes. */
-    GB("GB", 1024L * 1024L * 1024L);
+    GIB("GiB", 1024L * 1024L * 1024L);
 
     private final String displayName;
     private final long bytes;

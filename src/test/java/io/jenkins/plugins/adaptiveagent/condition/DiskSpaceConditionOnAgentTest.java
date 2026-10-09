@@ -20,11 +20,11 @@ class DiskSpaceConditionOnAgentTest {
     @Test
     void holdsWhenTheThresholdIsFarAboveAnyRealDisk(JenkinsRule jenkins) throws Exception {
         // a million gibibytes (a pebibyte) is more than any disk the test can run on
-        assertTrue(new DiskSpaceCondition(1_000_000, SizeUnit.GB).conditionPasses(contextOn(jenkins)));
+        assertTrue(new DiskSpaceCondition(1_000_000, SizeUnit.GIB).conditionPasses(contextOn(jenkins)));
     }
 
     @Test
     void doesNotHoldWhenTheThresholdIsZero(JenkinsRule jenkins) throws Exception {
-        assertFalse(new DiskSpaceCondition(0, SizeUnit.MB).conditionPasses(contextOn(jenkins)));
+        assertFalse(new DiskSpaceCondition(0, SizeUnit.MIB).conditionPasses(contextOn(jenkins)));
     }
 }

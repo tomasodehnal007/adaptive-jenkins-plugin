@@ -23,6 +23,9 @@ public final class BuildHistory {
      */
     public static List<Run<?, ?>> lastFinished(TaskContext context, int limit) {
         List<Run<?, ?>> result = new ArrayList<>();
+        if (limit <= 0) {
+            return result;
+        }
         // getBuilds() is declared with a raw type, hence the typed variable.
         @SuppressWarnings("unchecked")
         RunList<? extends Run<?, ?>> builds = context.computer().getBuilds();
@@ -30,7 +33,7 @@ public final class BuildHistory {
             if (result.size() == limit) {
                 break;
             }
-            if (run == context.run() || run.isBuilding()) {
+            if (run.getExternalizableId().equals(context.run().getExternalizableId()) || run.isBuilding()) {
                 continue;
             }
             result.add(run);

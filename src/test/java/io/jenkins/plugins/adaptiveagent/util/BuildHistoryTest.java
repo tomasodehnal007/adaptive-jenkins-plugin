@@ -62,6 +62,14 @@ class BuildHistoryTest {
     }
 
     @Test
+    void nonPositiveLimitReturnsNothing(JenkinsRule jenkins) throws Exception {
+        buildWithResult(jenkins, SUCCESS);
+
+        assertEquals(List.of(), idsSeenFromANewBuild(jenkins, 0));
+        assertEquals(List.of(), idsSeenFromANewBuild(jenkins, -1));
+    }
+
+    @Test
     void isEmptyWhenTheAgentHasRunNothingElse(JenkinsRule jenkins) throws Exception {
         assertEquals(List.of(), idsSeenFromANewBuild(jenkins, 5));
     }

@@ -38,7 +38,8 @@ public final class NodePropertyImpl extends NodeProperty<Node> {
      * @return a read-only view of the entries, never {@code null}
      */
     public List<BuildEntry> getEntries() {
-        return Collections.unmodifiableList(entries);
+        // entries is null when the stored configuration of the agent has no such field
+        return entries == null ? List.of() : Collections.unmodifiableList(entries);
     }
 
     /** Describes this property; its display name is the section title on the agent's Configure page. */
