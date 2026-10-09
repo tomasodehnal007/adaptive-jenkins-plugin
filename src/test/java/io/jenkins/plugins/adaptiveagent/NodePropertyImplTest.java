@@ -6,12 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import hudson.model.Descriptor;
 import hudson.slaves.DumbSlave;
 import io.jenkins.plugins.adaptiveagent.action.ShellScriptAction;
+import io.jenkins.plugins.adaptiveagent.condition.DiskSpaceCondition;
+import io.jenkins.plugins.adaptiveagent.condition.DurationCondition;
+import io.jenkins.plugins.adaptiveagent.condition.HistoryFailedCondition;
+import io.jenkins.plugins.adaptiveagent.condition.HistoryTimeCondition;
 import io.jenkins.plugins.adaptiveagent.condition.NoCondition;
 import io.jenkins.plugins.adaptiveagent.condition.ResultCondition;
+import io.jenkins.plugins.adaptiveagent.condition.ScriptCondition;
 import io.jenkins.plugins.adaptiveagent.entry.BuildEntry;
 import io.jenkins.plugins.adaptiveagent.entry.DuringBuildEntry;
 import io.jenkins.plugins.adaptiveagent.entry.PostBuildEntry;
 import io.jenkins.plugins.adaptiveagent.entry.PreBuildEntry;
+import io.jenkins.plugins.adaptiveagent.util.DurationComparison;
+import io.jenkins.plugins.adaptiveagent.util.IntervalUnit;
+import io.jenkins.plugins.adaptiveagent.util.SizeUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +39,28 @@ class NodePropertyImplTest {
                 new DuringBuildEntry(new NoCondition(), new ShellScriptAction("echo during")),
                 new PostBuildEntry(
                         new ResultCondition(false, true, false, true, false), new ShellScriptAction("echo after"))));
+        agent.setNodeProperties(List.of(property));
+
+        DumbSlave reloaded = jenkins.configRoundtrip(agent);
+
+        NodePropertyImpl actual = reloaded.getNodeProperties().get(NodePropertyImpl.class);
+        jenkins.assertEqualDataBoundBeans(property.getEntries(), actual.getEntries());
+    }
+
+    /** The form of every condition sends its fields to the constructor under the right names. */
+    @Test
+    void everyConditionFormSurvivesARoundtrip(JenkinsRule jenkins) throws Exception {
+        DumbSlave agent = jenkins.createSlave();
+        ShellScriptAction action = new ShellScriptAction("echo x");
+        NodePropertyImpl property = new NodePropertyImpl(List.of(
+                new PreBuildEntry(new ScriptCondition("test -f /tmp/x"), action),
+                new PreBuildEntry(new DiskSpaceCondition(7, SizeUnit.MIB), action),
+                new PreBuildEntry(new HistoryFailedCondition(4), action),
+                new PreBuildEntry(
+                        new HistoryTimeCondition(5, DurationComparison.LONGER_THAN, 9, IntervalUnit.MINUTES), action),
+                new PostBuildEntry(
+                        new DurationCondition(DurationComparison.SHORTER_THAN, 3, IntervalUnit.SECONDS), action),
+                new PostBuildEntry(new ResultCondition(true, true, true, true, true), action)));
         agent.setNodeProperties(List.of(property));
 
         DumbSlave reloaded = jenkins.configRoundtrip(agent);
