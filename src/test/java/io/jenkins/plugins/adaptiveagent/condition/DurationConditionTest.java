@@ -1,7 +1,7 @@
 package io.jenkins.plugins.adaptiveagent.condition;
 
-import static io.jenkins.plugins.adaptiveagent.condition.DurationCondition.Comparison.LONGER_THAN;
-import static io.jenkins.plugins.adaptiveagent.condition.DurationCondition.Comparison.SHORTER_THAN;
+import static io.jenkins.plugins.adaptiveagent.util.DurationComparison.LONGER_THAN;
+import static io.jenkins.plugins.adaptiveagent.util.DurationComparison.SHORTER_THAN;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

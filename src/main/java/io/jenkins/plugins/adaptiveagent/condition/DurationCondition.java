@@ -5,36 +5,14 @@ import hudson.model.Run;
 import io.jenkins.plugins.adaptiveagent.Phase;
 import io.jenkins.plugins.adaptiveagent.TaskContext;
 import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
+import io.jenkins.plugins.adaptiveagent.util.DurationComparison;
 import io.jenkins.plugins.adaptiveagent.util.IntervalUnit;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /** Condition on how long the build took. It only makes sense after the build, so it is offered only then. */
 public class DurationCondition extends Condition {
 
-    /** Whether the build must have taken longer or shorter than the given time. */
-    public enum Comparison {
-        /** The build took more than the given time. */
-        LONGER_THAN("Build took more than"),
-        /** The build took less than the given time. */
-        SHORTER_THAN("Build took less than");
-
-        private final String displayName;
-
-        Comparison(String displayName) {
-            this.displayName = displayName;
-        }
-
-        /**
-         * Returns the text shown in the form.
-         *
-         * @return the name of the comparison
-         */
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
-    private final Comparison comparison;
+    private final DurationComparison comparison;
     private final long time;
     private final IntervalUnit unit;
 
@@ -46,7 +24,7 @@ public class DurationCondition extends Condition {
      * @param unit the unit of {@code time}
      */
     @DataBoundConstructor
-    public DurationCondition(Comparison comparison, long time, IntervalUnit unit) {
+    public DurationCondition(DurationComparison comparison, long time, IntervalUnit unit) {
         this.comparison = comparison;
         this.time = time;
         this.unit = unit;
@@ -57,7 +35,7 @@ public class DurationCondition extends Condition {
      *
      * @return the comparison
      */
-    public Comparison getComparison() {
+    public DurationComparison getComparison() {
         return comparison;
     }
 
@@ -86,8 +64,7 @@ public class DurationCondition extends Condition {
      * @return {@code true} if it took strictly longer (or shorter, see {@link #getComparison()}) than the limit
      */
     public boolean holdsFor(long durationMillis) {
-        long limit = unit.toMillis(time);
-        return comparison == Comparison.LONGER_THAN ? durationMillis > limit : durationMillis < limit;
+        return comparison.holds(durationMillis, unit.toMillis(time));
     }
 
     /**
