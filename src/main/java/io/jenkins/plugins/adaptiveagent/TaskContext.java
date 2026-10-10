@@ -4,8 +4,11 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Computer;
+import hudson.model.Job;
+import hudson.model.Node;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.model.TopLevelItem;
 import io.jenkins.plugins.adaptiveagent.action.Action;
 import io.jenkins.plugins.adaptiveagent.condition.Condition;
 
@@ -28,4 +31,27 @@ public record TaskContext(
         Computer computer,
         Launcher launcher,
         TaskListener listener,
-        @CheckForNull FilePath workspace) {}
+        @CheckForNull FilePath workspace) {
+
+    /**
+     * Returns the workspace of the build, or, before Jenkins has allocated it, the directory where the
+     * agent will put it. The directory may not exist yet.
+     *
+     * <p>The default is the standard location for the job on the agent. A job with a custom workspace,
+     * or a workspace chosen inside a Pipeline, can use another one, which is known only once it is allocated.
+     *
+     * @return the workspace, or {@code null} if neither the build nor its agent and job are known
+     */
+    @CheckForNull
+    public FilePath workspaceOrDefault() {
+        if (workspace != null) {
+            return workspace;
+        }
+        Node node = computer == null ? null : computer.getNode();
+        Job<?, ?> job = run == null ? null : run.getParent();
+        if (node != null && job instanceof TopLevelItem item) {
+            return node.getWorkspaceFor(item);
+        }
+        return null;
+    }
+}
