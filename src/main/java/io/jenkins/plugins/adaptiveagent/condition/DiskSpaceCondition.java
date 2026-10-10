@@ -85,7 +85,7 @@ public class DiskSpaceCondition extends Condition {
 
         @Override
         public String getDisplayName() {
-            return "Free disk space is below a threshold";
+            return "Free disk space is low";
         }
     }
 }
