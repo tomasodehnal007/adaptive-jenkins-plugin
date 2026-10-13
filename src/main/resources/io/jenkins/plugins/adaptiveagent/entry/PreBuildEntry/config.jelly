@@ -1,0 +1,8 @@
+<?jelly escape-by-default='true'?>
+<!-- The dropdowns shared with the other entry types, plus the option that only entries before the build have. -->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
+  <st:include page="config.jelly" class="io.jenkins.plugins.adaptiveagent.entry.BuildEntry"/>
+  <f:entry>
+    <f:checkbox title="Abort the build if this task fails" field="abortBuildOnFailure"/>
+  </f:entry>
+</j:jelly>

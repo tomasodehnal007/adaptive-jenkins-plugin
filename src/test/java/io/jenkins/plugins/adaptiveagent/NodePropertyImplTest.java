@@ -45,8 +45,10 @@ class NodePropertyImplTest {
     @Test
     void configRoundtrip(JenkinsRule jenkins) throws Exception {
         DumbSlave agent = jenkins.createSlave();
+        PreBuildEntry before = new PreBuildEntry(new NoCondition(), new ShellScriptAction("echo before"));
+        before.setAbortBuildOnFailure(true);
         NodePropertyImpl property = new NodePropertyImpl(List.of(
-                new PreBuildEntry(new NoCondition(), new ShellScriptAction("echo before")),
+                before,
                 new DuringBuildEntry(
                         5, IntervalUnit.SECONDS, true, new NoCondition(), new ShellScriptAction("echo during")),
                 new PostBuildEntry(

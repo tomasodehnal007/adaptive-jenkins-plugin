@@ -48,15 +48,21 @@ public final class ActionRunner {
      * interrupted (e.g. the build is aborted), the remaining entries are not run.
      *
      * @param phase the phase of the build whose entries are run
+     * @return {@code true} if an entry that is set to abort the build failed; the remaining entries are
+     *     then not run and the caller should abort the build
      */
-    public void run(Phase phase) {
+    public boolean run(Phase phase) {
         for (BuildEntry entry : entriesOf(phase)) {
             if (Thread.currentThread().isInterrupted()) {
                 log(phase + ": interrupted, the remaining tasks are not run");
-                return;
+                return false;
             }
-            runEntry(entry);
+            if (runEntry(entry) == EntryResult.FAILED && entry.isAbortBuildOnFailure()) {
+                log(phase + ": aborting the build because the task is set to abort it on failure");
+                return true;
+            }
         }
+        return false;
     }
 
     /**

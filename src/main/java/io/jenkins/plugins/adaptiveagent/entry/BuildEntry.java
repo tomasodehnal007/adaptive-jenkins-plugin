@@ -55,6 +55,17 @@ public abstract class BuildEntry implements Describable<BuildEntry> {
     public abstract Phase getPhase();
 
     /**
+     * Tells whether the build must be aborted if the action of this entry fails. Only entries that run
+     * before the build can do it; for the others there is nothing left to abort or the result is not to be
+     * changed by the task.
+     *
+     * @return {@code false}; {@link PreBuildEntry} overrides it
+     */
+    public boolean isAbortBuildOnFailure() {
+        return false;
+    }
+
+    /**
      * Descriptor of an entry type. Besides the name shown in the "Add task" menu it tells the form
      * which conditions and actions to offer, i.e. only those applicable in this entry's phase.
      * The form ({@code BuildEntry/config.jelly}) reads them through {@link #getConditionDescriptors()}

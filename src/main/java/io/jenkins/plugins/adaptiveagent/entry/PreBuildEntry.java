@@ -5,9 +5,12 @@ import io.jenkins.plugins.adaptiveagent.Phase;
 import io.jenkins.plugins.adaptiveagent.action.Action;
 import io.jenkins.plugins.adaptiveagent.condition.Condition;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 /** A task that runs before a build starts on the agent. */
 public class PreBuildEntry extends BuildEntry {
+
+    private boolean abortBuildOnFailure;
 
     /**
      * Creates the entry; Jenkins calls this when the agent's configuration form is saved.
@@ -28,6 +31,29 @@ public class PreBuildEntry extends BuildEntry {
     @Override
     public Phase getPhase() {
         return Phase.PRE_BUILD;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Off by default: a failing task is then only written into the build log.
+     *
+     * @return {@code true} if a failure of the action aborts the build, which then ends as FAILURE
+     */
+    @Override
+    public boolean isAbortBuildOnFailure() {
+        return abortBuildOnFailure;
+    }
+
+    /**
+     * Sets whether a failure of the action aborts the build. It is an optional setting, hence a setter
+     * and not a constructor parameter.
+     *
+     * @param abortBuildOnFailure {@code true} to abort the build when the action fails
+     */
+    @DataBoundSetter
+    public void setAbortBuildOnFailure(boolean abortBuildOnFailure) {
+        this.abortBuildOnFailure = abortBuildOnFailure;
     }
 
     /**

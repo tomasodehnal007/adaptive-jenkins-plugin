@@ -66,10 +66,14 @@ public class RunListenerImpl extends RunListener<Run<?, ?>> {
      * @param launcher starts processes on the agent
      * @param listener writes into the console log of the build
      * @return an environment that changes nothing
+     * @throws Run.RunnerAbortedException (unchecked) if a task that is set to abort the build failed; Jenkins
+     *     then stops the build and marks it as failed
      */
     @Override
     public Environment setUpEnvironment(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        runEntries(Phase.PRE_BUILD, build, launcher, listener);
+        if (runEntries(Phase.PRE_BUILD, build, launcher, listener)) {
+            throw new Run.RunnerAbortedException();
+        }
         return new Environment() {};
     }
 
@@ -96,14 +100,18 @@ public class RunListenerImpl extends RunListener<Run<?, ?>> {
         runEntries(Phase.POST_BUILD, build, node.createLauncher(listener), listener);
     }
 
-    /** Runs the entries of the given phase configured on the agent the build runs on. */
-    private void runEntries(Phase phase, AbstractBuild<?, ?> build, Launcher launcher, TaskListener listener) {
+    /**
+     * Runs the entries of the given phase configured on the agent the build runs on.
+     *
+     * @return {@code true} if the build should be aborted
+     */
+    private boolean runEntries(Phase phase, AbstractBuild<?, ?> build, Launcher launcher, TaskListener listener) {
         Node node = build.getBuiltOn();
         Computer computer = node == null ? null : node.toComputer();
         if (computer == null) {
-            return;
+            return false;
         }
         TaskContext context = new TaskContext(build, computer, launcher, listener, build.getWorkspace());
-        new ActionRunner(context).run(phase);
+        return new ActionRunner(context).run(phase);
     }
 }
