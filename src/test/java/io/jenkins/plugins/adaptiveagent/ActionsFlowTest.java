@@ -6,11 +6,14 @@ import static io.jenkins.plugins.adaptiveagent.TestSupport.pre;
 import static io.jenkins.plugins.adaptiveagent.TestSupport.projectOn;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.FilePath;
+import hudson.model.Computer;
 import hudson.model.FreeStyleProject;
 import hudson.slaves.DumbSlave;
 import io.jenkins.plugins.adaptiveagent.action.CleanWorkspaceAction;
+import io.jenkins.plugins.adaptiveagent.action.SetOfflineAction;
 import io.jenkins.plugins.adaptiveagent.condition.NoCondition;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -45,5 +48,30 @@ class ActionsFlowTest {
 
         // without the cleanup this second build would find the marker and fail
         jenkins.buildAndAssertSuccess(project);
+    }
+
+    @Test
+    void setOfflineAfterTheBuild(JenkinsRule jenkins) throws Exception {
+        DumbSlave agent = agentWith(jenkins, post(new NoCondition(), new SetOfflineAction()));
+        FreeStyleProject project = projectOn(jenkins, agent, "echo hello");
+
+        jenkins.buildAndAssertSuccess(project);
+
+        Computer computer = agent.toComputer();
+        assertNotNull(computer);
+        assertTrue(computer.isOffline(), "the agent should be offline");
+        assertTrue(computer.isConnected(), "the agent should stay connected, only paused");
+        assertTrue(computer.getOfflineCauseReason().contains(project.getFullDisplayName()));
+    }
+
+    /** Going offline does not abort the build that triggered it. */
+    @Test
+    void setOfflineBeforeTheBuildLetsTheBuildFinish(JenkinsRule jenkins) throws Exception {
+        DumbSlave agent = agentWith(jenkins, pre(new NoCondition(), new SetOfflineAction()));
+        FreeStyleProject project = projectOn(jenkins, agent, "echo hello");
+
+        jenkins.buildAndAssertSuccess(project);
+
+        assertTrue(agent.toComputer().isOffline());
     }
 }
