@@ -11,10 +11,14 @@ import java.io.IOException;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Action with an optional parameter: takes the agent offline and reboots the machine at once.
+ * Action with an optional parameter: takes the agent offline and reboots the whole machine the agent runs
+ * on at once, not just the agent process. Everything else running on that machine is restarted too.
  *
  * <p>Only offered after the build, so the build's own result is already final. The operating
  * system user running the agent must be allowed to run the reboot command.
+ *
+ * <p>The steps are always the same (take the agent offline, {@link #waitBeforeReboot}, run the command);
+ * {@link GracefulRebootAction} only changes the waiting.
  */
 public class RebootAction extends Action {
 
@@ -61,31 +65,32 @@ public class RebootAction extends Action {
     /**
      * {@inheritDoc}
      *
-     * @throws AbortException if the reboot command exits with a non-zero code
+     * @throws AbortException if the reboot command exits with a non-zero code, or if
+     *     {@link #waitBeforeReboot} gives up
      * @throws IOException if the command cannot be started
-     * @throws InterruptedException if the thread is interrupted while waiting for the command
+     * @throws InterruptedException if the thread is interrupted while waiting
      */
     @Override
     public void runAction(TaskContext context) throws IOException, InterruptedException {
         SetOfflineAction.takeOffline(context);
-        reboot(context, effectiveCommand(context.launcher().isUnix()));
-    }
-
-    /**
-     * Runs the reboot command on the agent. Also used by {@link GracefulRebootAction}.
-     *
-     * @param context the build and the agent to reboot
-     * @param command the command to run
-     * @throws AbortException if the command exits with a non-zero code
-     * @throws IOException if the command cannot be started
-     * @throws InterruptedException if the thread is interrupted while waiting for the command
-     */
-    static void reboot(TaskContext context, String command) throws IOException, InterruptedException {
-        int exitCode = ScriptRunner.run(context, command);
+        waitBeforeReboot(context);
+        int exitCode =
+                ScriptRunner.run(context, effectiveCommand(context.launcher().isUnix()));
         if (exitCode != 0) {
             throw new AbortException("The reboot command exited with code " + exitCode);
         }
     }
+
+    /**
+     * Step between taking the agent offline and running the reboot command. Does nothing here, so the
+     * machine restarts at once; subclasses override it to wait for something.
+     *
+     * @param context the build and the agent to reboot
+     * @throws AbortException if the reboot should not go ahead
+     * @throws IOException if waiting fails
+     * @throws InterruptedException if the thread is interrupted while waiting
+     */
+    protected void waitBeforeReboot(TaskContext context) throws IOException, InterruptedException {}
 
     /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
     @Extension
@@ -96,7 +101,7 @@ public class RebootAction extends Action {
 
         @Override
         public String getDisplayName() {
-            return "Reboot agent";
+            return "Reboot the agent's machine";
         }
 
         /**
