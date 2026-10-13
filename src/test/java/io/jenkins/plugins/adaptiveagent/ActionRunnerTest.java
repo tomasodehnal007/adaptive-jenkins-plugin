@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.jenkins.plugins.adaptiveagent.ActionRunner.EntryResult;
 import io.jenkins.plugins.adaptiveagent.action.Action;
 import io.jenkins.plugins.adaptiveagent.condition.Condition;
 import io.jenkins.plugins.adaptiveagent.entry.PreBuildEntry;
@@ -74,17 +75,19 @@ class ActionRunnerTest {
         return out.toString(StandardCharsets.UTF_8);
     }
 
-    private void run(Condition condition, Action action) {
-        runner.runEntry(new PreBuildEntry(condition, action));
+    private EntryResult run(Condition condition, Action action) {
+        EntryResult result = runner.runEntry(new PreBuildEntry(condition, action));
         context.listener().getLogger().flush();
+        return result;
     }
 
     @Test
     void actionRunsWhenTheConditionPasses() {
         CountingAction action = new CountingAction(() -> null);
 
-        run(condition(() -> true), action);
+        EntryResult result = run(condition(() -> true), action);
 
+        assertEquals(EntryResult.SUCCEEDED, result);
         assertEquals(1, action.runs.get());
         assertTrue(log().contains("running"), log());
         assertTrue(log().contains("finished"), log());
@@ -94,8 +97,9 @@ class ActionRunnerTest {
     void actionIsSkippedWhenTheConditionDoesNotPass() {
         CountingAction action = new CountingAction(() -> null);
 
-        run(condition(() -> false), action);
+        EntryResult result = run(condition(() -> false), action);
 
+        assertEquals(EntryResult.SKIPPED, result);
         assertEquals(0, action.runs.get());
         assertTrue(log().contains("not met"), log());
     }
@@ -120,8 +124,9 @@ class ActionRunnerTest {
             throw new IOException("boom");
         });
 
-        run(condition(() -> true), action);
+        EntryResult result = run(condition(() -> true), action);
 
+        assertEquals(EntryResult.FAILED, result);
         assertEquals(1, action.runs.get());
         assertTrue(log().contains("failed: boom"), log());
         assertFalse(log().contains("finished"), log());

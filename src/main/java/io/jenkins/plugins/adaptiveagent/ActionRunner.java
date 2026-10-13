@@ -22,6 +22,16 @@ public final class ActionRunner {
 
     private static final Logger LOGGER = Logger.getLogger(ActionRunner.class.getName());
 
+    /** What happened when an entry was run. */
+    enum EntryResult {
+        /** The condition did not hold, could not be evaluated, or the entry was incomplete or interrupted. */
+        SKIPPED,
+        /** The condition held and the action finished without an error. */
+        SUCCEEDED,
+        /** The condition held, but the action failed or was interrupted. */
+        FAILED
+    }
+
     private final TaskContext context;
 
     /**
@@ -78,13 +88,15 @@ public final class ActionRunner {
      * written into the build log.
      *
      * @param entry the entry to run
+     * @return what happened; the action ran only for {@link EntryResult#SUCCEEDED} and
+     *     {@link EntryResult#FAILED}
      */
-    void runEntry(BuildEntry entry) {
+    EntryResult runEntry(BuildEntry entry) {
         Condition condition = entry.getCondition();
         Action action = entry.getAction();
         if (condition == null || action == null) {
             log("Skipping an incomplete entry (" + entry.getPhase() + "): condition or action is missing");
-            return;
+            return EntryResult.SKIPPED;
         }
         String conditionName = nameOf(condition);
         String actionName = nameOf(action);
@@ -92,26 +104,29 @@ public final class ActionRunner {
         try {
             if (!condition.conditionPasses(context)) {
                 log(entry.getPhase() + ": condition '" + conditionName + "' not met, skipping '" + actionName + "'");
-                return;
+                return EntryResult.SKIPPED;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log(entry.getPhase() + ": interrupted while evaluating condition '" + conditionName + "'");
-            return;
+            return EntryResult.SKIPPED;
         } catch (Exception e) {
             fail(entry.getPhase() + ": condition '" + conditionName + "' could not be evaluated", e);
-            return;
+            return EntryResult.SKIPPED;
         }
 
         log(entry.getPhase() + ": running '" + actionName + "'");
         try {
             action.runAction(context);
             log(entry.getPhase() + ": '" + actionName + "' finished");
+            return EntryResult.SUCCEEDED;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log(entry.getPhase() + ": interrupted while running '" + actionName + "'");
+            return EntryResult.FAILED;
         } catch (Exception e) {
             fail(entry.getPhase() + ": '" + actionName + "' failed", e);
+            return EntryResult.FAILED;
         }
     }
 

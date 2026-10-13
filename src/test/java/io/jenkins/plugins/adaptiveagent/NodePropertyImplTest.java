@@ -47,7 +47,8 @@ class NodePropertyImplTest {
         DumbSlave agent = jenkins.createSlave();
         NodePropertyImpl property = new NodePropertyImpl(List.of(
                 new PreBuildEntry(new NoCondition(), new ShellScriptAction("echo before")),
-                new DuringBuildEntry(new NoCondition(), new ShellScriptAction("echo during")),
+                new DuringBuildEntry(
+                        5, IntervalUnit.SECONDS, true, new NoCondition(), new ShellScriptAction("echo during")),
                 new PostBuildEntry(
                         new ResultCondition(false, true, false, true, false), new ShellScriptAction("echo after"))));
         agent.setNodeProperties(List.of(property));
