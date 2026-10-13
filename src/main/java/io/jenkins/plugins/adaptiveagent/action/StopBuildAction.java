@@ -12,6 +12,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * Action without parameters: stops the build. After the build there is nothing left to stop, so
  * it is not offered in {@link Phase#POST_BUILD}.
+ *
+ * <p>Used during the build it is best set to repeat: an interrupt that arrives while the build is only
+ * being prepared can get lost, and the next check then stops the build.
  */
 public class StopBuildAction extends Action {
 

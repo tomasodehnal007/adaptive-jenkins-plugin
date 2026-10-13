@@ -52,9 +52,14 @@ class DuringBuildFlowTest {
         assertEquals(1, countLines(second, "TICK"), second);
     }
 
+    /**
+     * The interval is long enough for the build to be running its step: an interrupt that arrives while the step
+     * is still being launched makes Jenkins end the build as FAILURE, not as ABORTED.
+     */
     @Test
     void duringTaskCanStopTheBuild(JenkinsRule jenkins) throws Exception {
-        DumbSlave agent = agentWith(jenkins, during(false, new StopBuildAction()));
+        DumbSlave agent = agentWith(
+                jenkins, new DuringBuildEntry(2, IntervalUnit.SECONDS, true, new NoCondition(), new StopBuildAction()));
 
         FreeStyleBuild build = jenkins.buildAndAssertStatus(
                 Result.ABORTED, projectOn(jenkins, agent, "sleep 30; echo SHOULD_NOT_RUN"));

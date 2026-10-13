@@ -2,6 +2,7 @@ package io.jenkins.plugins.adaptiveagent;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.FilePath;
 import java.io.File;
@@ -21,5 +22,16 @@ class TaskContextTest {
     @Test
     void workspaceOrDefaultIsNullWhenNothingIsKnown() {
         assertNull(new TaskContext(null, null, null, null, null).workspaceOrDefault());
+    }
+
+    /** The time since the task started, measured from the given start (a Pipeline node block). */
+    @Test
+    void elapsedTimeCountsFromTheStartOfTheTask() {
+        long fiveSecondsAgo = System.currentTimeMillis() - 5_000;
+        TaskContext context = new TaskContext(null, null, null, null, null, fiveSecondsAgo);
+
+        long elapsed = context.elapsedMillis();
+
+        assertTrue(elapsed >= 5_000 && elapsed < 60_000, "elapsed: " + elapsed);
     }
 }

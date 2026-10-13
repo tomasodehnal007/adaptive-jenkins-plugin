@@ -1,7 +1,6 @@
 package io.jenkins.plugins.adaptiveagent.condition;
 
 import hudson.Extension;
-import hudson.model.Run;
 import io.jenkins.plugins.adaptiveagent.Phase;
 import io.jenkins.plugins.adaptiveagent.TaskContext;
 import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
@@ -9,7 +8,10 @@ import io.jenkins.plugins.adaptiveagent.util.DurationComparison;
 import io.jenkins.plugins.adaptiveagent.util.IntervalUnit;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-/** Condition on how long the build took. It only makes sense after the build, so it is offered only then. */
+/**
+ * Condition on how long the build took (in a Pipeline: how long its {@code node} block on the agent took).
+ * It only makes sense after the build, so it is offered only then.
+ */
 public class DurationCondition extends Condition {
 
     private final DurationComparison comparison;
@@ -70,17 +72,14 @@ public class DurationCondition extends Condition {
     /**
      * {@inheritDoc}
      *
-     * <p>If the build has no duration stored yet (it is still running, as a Pipeline build is after a
-     * {@code node} block), the time since it started is used.
+     * <p>The time is measured by {@link TaskContext#elapsedMillis()}: the duration of the build, or in a
+     * Pipeline build the time of the {@code node} block on this agent.
      *
-     * @return {@code true} if the duration of the build satisfies the condition
+     * @return {@code true} if the duration satisfies the condition
      */
     @Override
     public boolean conditionPasses(TaskContext context) {
-        Run<?, ?> run = context.run();
-        long duration =
-                run.getDuration() > 0 ? run.getDuration() : System.currentTimeMillis() - run.getStartTimeInMillis();
-        return holdsFor(duration);
+        return holdsFor(context.elapsedMillis());
     }
 
     /** Describes this condition type; it is offered in the "Condition" dropdown only after the build. */

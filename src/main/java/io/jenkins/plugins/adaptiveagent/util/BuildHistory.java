@@ -16,6 +16,8 @@ public final class BuildHistory {
      * and builds that are still running are not included.
      *
      * <p>It is the history of the <em>agent</em>, so builds of all jobs that ran on it are counted.
+     * Only builds of Freestyle jobs are included: Jenkins lists the builds of an agent only for jobs of the
+     * type {@code AbstractProject}, so Pipeline builds are not seen.
      *
      * @param context the build and the agent whose history is read
      * @param limit the maximum number of builds to return

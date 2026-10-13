@@ -25,13 +25,48 @@ import io.jenkins.plugins.adaptiveagent.condition.Condition;
  * @param listener writes into the console log of the build
  * @param workspace workspace of the build on the agent, or {@code null} if there is none (yet), e.g. before the
  *     build starts
+ * @param startedAt when the task started on the agent, in milliseconds since the epoch: the start of the build
+ *     for a Freestyle build, the start of the {@code node} block for a Pipeline build; {@code 0} if unknown
  */
 public record TaskContext(
         Run<?, ?> run,
         Computer computer,
         Launcher launcher,
         TaskListener listener,
-        @CheckForNull FilePath workspace) {
+        @CheckForNull FilePath workspace,
+        long startedAt) {
+
+    /**
+     * Creates a context of a task that started together with the build.
+     *
+     * @param run the build being run
+     * @param computer the agent the build runs on
+     * @param launcher starts processes on that agent (not on the controller)
+     * @param listener writes into the console log of the build
+     * @param workspace workspace of the build on the agent, or {@code null} if there is none (yet)
+     */
+    public TaskContext(
+            Run<?, ?> run,
+            Computer computer,
+            Launcher launcher,
+            TaskListener listener,
+            @CheckForNull FilePath workspace) {
+        this(run, computer, launcher, listener, workspace, run == null ? 0 : run.getStartTimeInMillis());
+    }
+
+    /**
+     * Returns how long the task has been running on the agent. For a finished build this is the duration
+     * of the build; otherwise the time since {@link #startedAt()}. In a Pipeline build it is the time of the
+     * {@code node} block on this agent, not of the whole build.
+     *
+     * @return the time in milliseconds
+     */
+    public long elapsedMillis() {
+        if (run != null && !run.isInProgress() && run.getDuration() > 0) {
+            return run.getDuration();
+        }
+        return System.currentTimeMillis() - startedAt;
+    }
 
     /**
      * Returns the workspace of the build, or, before Jenkins has allocated it, the directory where the
