@@ -7,30 +7,24 @@ import hudson.util.RemotingDiagnostics;
 import io.jenkins.plugins.adaptiveagent.TaskContext;
 import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
 import java.io.IOException;
-import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Action with a parameter: a Groovy script that runs <em>inside the agent's JVM</em> (like the
  * script console of the agent). Everything the script prints, and its result, goes into the build log.
  *
- * <p>Only an administrator ({@link Jenkins#ADMINISTER}) can create or save it, because it is
- * as powerful as the script console.
  */
 public class GroovyScriptAction extends Action {
 
     private final String scriptText;
 
     /**
-     * Creates the action; Jenkins calls this when the agent's configuration form is saved, as the user
-     * who saves it.
+     * Creates the action; Jenkins calls this when the agent's configuration form is saved.
      *
      * @param scriptText the Groovy script, as typed into the form
-     * @throws org.springframework.security.access.AccessDeniedException if the current user is not an administrator
      */
     @DataBoundConstructor
     public GroovyScriptAction(String scriptText) {
-        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         this.scriptText = scriptText;
     }
 

@@ -24,6 +24,16 @@ public class SetOfflineAction extends Action {
      */
     @Override
     public void runAction(TaskContext context) {
+        takeOffline(context);
+    }
+
+    /**
+     * Marks the agent temporarily offline, with a reason naming the build that did it. Also used by the
+     * reboot actions.
+     *
+     * @param context the build and the agent to take offline
+     */
+    static void takeOffline(TaskContext context) {
         Computer computer = context.computer();
         String message = "Taken offline by the Adaptive Jenkins Agent plugin. Triggered by build '"
                 + context.run().getFullDisplayName() + "'";

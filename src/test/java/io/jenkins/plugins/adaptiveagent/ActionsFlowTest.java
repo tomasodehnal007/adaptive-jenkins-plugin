@@ -16,6 +16,7 @@ import hudson.model.Result;
 import hudson.slaves.DumbSlave;
 import io.jenkins.plugins.adaptiveagent.action.CleanWorkspaceAction;
 import io.jenkins.plugins.adaptiveagent.action.GroovyScriptAction;
+import io.jenkins.plugins.adaptiveagent.action.RebootAction;
 import io.jenkins.plugins.adaptiveagent.action.SetOfflineAction;
 import io.jenkins.plugins.adaptiveagent.action.StopBuildAction;
 import io.jenkins.plugins.adaptiveagent.condition.NoCondition;
@@ -100,5 +101,17 @@ class ActionsFlowTest {
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
 
         jenkins.assertLogContains("GROOVY_42", build);
+    }
+
+    /** The reboot command is replaced by a harmless one: the agent goes offline and the command runs. */
+    @Test
+    void rebootTakesTheAgentOfflineAndRunsTheCommand(JenkinsRule jenkins) throws Exception {
+        DumbSlave agent = agentWith(jenkins, post(new NoCondition(), new RebootAction("echo REBOOT_COMMAND")));
+        FreeStyleProject project = projectOn(jenkins, agent, "echo hello");
+
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
+
+        jenkins.assertLogContains("REBOOT_COMMAND", build);
+        assertTrue(agent.toComputer().isOffline());
     }
 }
