@@ -10,10 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.FilePath;
 import hudson.model.Computer;
+import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.Result;
 import hudson.slaves.DumbSlave;
 import io.jenkins.plugins.adaptiveagent.action.CleanWorkspaceAction;
 import io.jenkins.plugins.adaptiveagent.action.SetOfflineAction;
+import io.jenkins.plugins.adaptiveagent.action.StopBuildAction;
 import io.jenkins.plugins.adaptiveagent.condition.NoCondition;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -73,5 +76,16 @@ class ActionsFlowTest {
         jenkins.buildAndAssertSuccess(project);
 
         assertTrue(agent.toComputer().isOffline());
+    }
+
+    /** Stopping before the build aborts it, so its steps never run. */
+    @Test
+    void stopBuildBeforeTheBuild(JenkinsRule jenkins) throws Exception {
+        DumbSlave agent = agentWith(jenkins, pre(new NoCondition(), new StopBuildAction()));
+        FreeStyleProject project = projectOn(jenkins, agent, "echo SHOULD_NOT_RUN");
+
+        FreeStyleBuild build = jenkins.assertBuildStatus(Result.ABORTED, project.scheduleBuild2(0));
+
+        jenkins.assertLogNotContains("SHOULD_NOT_RUN", build);
     }
 }
