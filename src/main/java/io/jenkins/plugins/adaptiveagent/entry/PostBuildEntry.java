@@ -30,8 +30,11 @@ public class PostBuildEntry extends BuildEntry {
         return Phase.POST_BUILD;
     }
 
-    /** Describes this entry type; its display name is the item offered in the "Add task" menu. */
-    @Extension
+    /**
+     * Describes this entry type; its display name is the item offered in the "Add task" menu. The ordinal puts
+     * it in the menu in the order of the build: before, during, after.
+     */
+    @Extension(ordinal = 1)
     public static class DescriptorImpl extends BuildEntryDescriptor {
 
         /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */

@@ -1,5 +1,6 @@
 package io.jenkins.plugins.adaptiveagent;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,6 +30,16 @@ import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 @WithJenkins
 class NodePropertyImplTest {
+
+    /** The "Add task" menu lists the entry types in the order of the build. */
+    @Test
+    void entryTypesAreOfferedInTheOrderOfTheBuild(JenkinsRule jenkins) {
+        List<String> names = jenkins.jenkins.getDescriptorList(BuildEntry.class).stream()
+                .map(Descriptor::getDisplayName)
+                .toList();
+
+        assertEquals(List.of("Action run before build", "Action run during build", "Action run after build"), names);
+    }
 
     /** Same as the user opening the agent's Configure page and pressing Save without changing anything. */
     @Test
