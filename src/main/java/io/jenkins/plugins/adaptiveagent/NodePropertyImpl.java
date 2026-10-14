@@ -53,5 +53,15 @@ public final class NodePropertyImpl extends NodeProperty<Node> {
         public String getDisplayName() {
             return "Adaptive agent tasks";
         }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @return {@code false}: the tasks are read only from the agent's own properties
+         */
+        @Override
+        public boolean isApplicableAsGlobal() {
+            return false;
+        }
     }
 }
