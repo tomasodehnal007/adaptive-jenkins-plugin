@@ -148,7 +148,8 @@ class ActionsFlowTest {
         FreeStyleBuild trigger = triggerBuild.waitForStart();
 
         long deadline = System.currentTimeMillis() + 60_000;
-        while (!trigger.getLog().contains("Waiting for the other builds") && System.currentTimeMillis() < deadline) {
+        while (!JenkinsRule.getLog(trigger).contains("Waiting for the other builds")
+                && System.currentTimeMillis() < deadline) {
             Thread.sleep(200);
         }
         Thread.sleep(3_000); // long enough to be sure the command would have run by now

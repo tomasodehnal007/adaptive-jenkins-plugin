@@ -1,5 +1,6 @@
 package io.jenkins.plugins.adaptiveagent;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,5 +34,11 @@ class TaskContextTest {
         long elapsed = context.elapsedMillis();
 
         assertTrue(elapsed >= 5_000 && elapsed < 60_000, "elapsed: " + elapsed);
+    }
+
+    /** Without a known start there is nothing to measure from, so no huge time since 1970 comes out. */
+    @Test
+    void elapsedTimeIsZeroWhenTheStartIsNotKnown() {
+        assertEquals(0, new TaskContext(null, null, null, null, null).elapsedMillis());
     }
 }

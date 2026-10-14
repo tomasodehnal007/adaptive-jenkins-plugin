@@ -59,13 +59,13 @@ public record TaskContext(
      * of the build; otherwise the time since {@link #startedAt()}. In a Pipeline build it is the time of the
      * {@code node} block on this agent, not of the whole build.
      *
-     * @return the time in milliseconds
+     * @return the time in milliseconds, or {@code 0} if the start of the task is not known
      */
     public long elapsedMillis() {
         if (run != null && !run.isInProgress() && run.getDuration() > 0) {
             return run.getDuration();
         }
-        return System.currentTimeMillis() - startedAt;
+        return startedAt > 0 ? System.currentTimeMillis() - startedAt : 0;
     }
 
     /**
