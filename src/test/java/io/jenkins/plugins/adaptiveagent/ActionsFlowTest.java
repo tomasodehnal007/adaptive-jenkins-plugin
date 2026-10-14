@@ -4,7 +4,6 @@ import static io.jenkins.plugins.adaptiveagent.TestSupport.agentWith;
 import static io.jenkins.plugins.adaptiveagent.TestSupport.post;
 import static io.jenkins.plugins.adaptiveagent.TestSupport.pre;
 import static io.jenkins.plugins.adaptiveagent.TestSupport.projectOn;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +46,7 @@ class ActionsFlowTest {
 
         FilePath workspace = agent.getWorkspaceFor(project);
         assertNotNull(workspace);
-        assertFalse(workspace.exists(), "the workspace should have been deleted");
+        assertTrue(workspace.list().isEmpty(), "the workspace should have been emptied");
     }
 
     /** Before the build Jenkins has not allocated the workspace yet; the old one must still be found and cleaned. */

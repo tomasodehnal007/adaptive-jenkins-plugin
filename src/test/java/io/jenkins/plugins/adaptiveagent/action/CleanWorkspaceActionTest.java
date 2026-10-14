@@ -16,31 +16,35 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/** Deletes a workspace on this machine, without Jenkins. */
+/** Cleans a workspace on this machine, without Jenkins. */
 class CleanWorkspaceActionTest {
 
     @TempDir
     Path tempDir;
 
     @Test
-    void deletesTheWorkspaceWithEverythingInIt() throws Exception {
+    void emptiesTheWorkspaceAndKeepsTheDirectory() throws Exception {
         Path workspace = Files.createDirectories(tempDir.resolve("workspace/sub"));
         Files.writeString(workspace.resolve("file.txt"), "x");
         Path root = tempDir.resolve("workspace");
 
         new CleanWorkspaceAction().runAction(localContext(root, new ByteArrayOutputStream()));
 
-        assertFalse(Files.exists(root));
+        assertTrue(Files.isDirectory(root));
+        try (var content = Files.list(root)) {
+            assertEquals(0, content.count());
+        }
     }
 
     @Test
     void doesNotTouchSiblingsOfTheWorkspace() throws Exception {
         Path workspace = Files.createDirectories(tempDir.resolve("workspace"));
+        Files.writeString(workspace.resolve("file.txt"), "x");
         Path neighbour = Files.createDirectories(tempDir.resolve("other-job"));
 
         new CleanWorkspaceAction().runAction(localContext(workspace, new ByteArrayOutputStream()));
 
-        assertFalse(Files.exists(workspace));
+        assertFalse(Files.exists(workspace.resolve("file.txt")));
         assertTrue(Files.exists(neighbour));
     }
 

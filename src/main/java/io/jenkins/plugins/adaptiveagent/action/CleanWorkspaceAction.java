@@ -9,8 +9,9 @@ import java.io.IOException;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Action without parameters: deletes the workspace of the build on the agent. It is not offered during
- * the build, where it would pull the files out from under the running build steps.
+ * Action without parameters: deletes everything in the workspace of the build on the agent, the workspace
+ * directory itself stays. It is not offered during the build, where it would pull the files out from under the
+ * running build steps.
  */
 public class CleanWorkspaceAction extends Action {
 
@@ -32,7 +33,7 @@ public class CleanWorkspaceAction extends Action {
     public void runAction(TaskContext context) throws IOException, InterruptedException {
         FilePath workspace = context.workspaceOrDefault();
         if (workspace != null) {
-            workspace.deleteRecursive();
+            workspace.deleteContents();
         }
     }
 
