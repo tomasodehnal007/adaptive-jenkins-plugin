@@ -4,7 +4,6 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import io.jenkins.plugins.adaptiveagent.action.Action;
 import io.jenkins.plugins.adaptiveagent.condition.Condition;
-import java.util.ArrayList;
 import java.util.List;
 import jenkins.model.Jenkins;
 
@@ -39,14 +38,8 @@ public abstract class TaskDescriptor<T extends Describable<T>> extends Descripto
      *     {@link TaskDescriptor}s are offered in every phase
      */
     public static <T extends Describable<T>> List<Descriptor<T>> applicableTo(Class<T> type, Phase phase) {
-        List<Descriptor<T>> result = new ArrayList<>();
-        for (Descriptor<T> descriptor : Jenkins.get().getDescriptorList(type)) {
-            boolean applicable =
-                    !(descriptor instanceof TaskDescriptor) || ((TaskDescriptor<?>) descriptor).isApplicable(phase);
-            if (applicable) {
-                result.add(descriptor);
-            }
-        }
-        return result;
+        return Jenkins.get().getDescriptorList(type).stream()
+                .filter(descriptor -> !(descriptor instanceof TaskDescriptor<?> task) || task.isApplicable(phase))
+                .toList();
     }
 }

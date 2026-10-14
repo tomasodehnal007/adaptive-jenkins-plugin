@@ -14,7 +14,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * <p>This class holds only the configuration. Whether the task has already run in the current build is
  * remembered by the timer of that build, not here, because this object is shared by all builds.
  */
-public class DuringBuildEntry extends BuildEntry {
+public final class DuringBuildEntry extends BuildEntry {
 
     private final long interval;
     private final IntervalUnit unit;

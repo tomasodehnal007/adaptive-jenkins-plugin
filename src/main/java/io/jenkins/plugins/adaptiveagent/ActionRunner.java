@@ -6,7 +6,6 @@ import hudson.model.Node;
 import io.jenkins.plugins.adaptiveagent.action.Action;
 import io.jenkins.plugins.adaptiveagent.condition.Condition;
 import io.jenkins.plugins.adaptiveagent.entry.BuildEntry;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,21 +72,17 @@ public final class ActionRunner {
      * @return the entries of that phase; empty if the agent has no configuration
      */
     List<BuildEntry> entriesOf(Phase phase) {
-        List<BuildEntry> result = new ArrayList<>();
         Node node = context.computer().getNode();
         if (node == null) {
-            return result;
+            return List.of();
         }
         NodePropertyImpl property = node.getNodeProperties().get(NodePropertyImpl.class);
         if (property == null) {
-            return result;
+            return List.of();
         }
-        for (BuildEntry entry : property.getEntries()) {
-            if (entry.getPhase() == phase) {
-                result.add(entry);
-            }
-        }
-        return result;
+        return property.getEntries().stream()
+                .filter(entry -> entry.getPhase() == phase)
+                .toList();
     }
 
     /**

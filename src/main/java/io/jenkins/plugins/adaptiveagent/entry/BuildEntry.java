@@ -13,7 +13,8 @@ import java.util.List;
  * The {@link Phase} in which it happens is given by the subclass ({@link PreBuildEntry},
  * {@link DuringBuildEntry}, {@link PostBuildEntry}), which is what the user picks when pressing "Add task".
  */
-public abstract class BuildEntry implements Describable<BuildEntry> {
+public abstract sealed class BuildEntry implements Describable<BuildEntry>
+        permits PreBuildEntry, DuringBuildEntry, PostBuildEntry {
 
     private final Condition condition;
     private final Action action;

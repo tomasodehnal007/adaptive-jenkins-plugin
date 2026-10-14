@@ -8,7 +8,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 /** A task that runs before a build starts on the agent. */
-public class PreBuildEntry extends BuildEntry {
+public final class PreBuildEntry extends BuildEntry {
 
     private boolean abortBuildOnFailure;
 

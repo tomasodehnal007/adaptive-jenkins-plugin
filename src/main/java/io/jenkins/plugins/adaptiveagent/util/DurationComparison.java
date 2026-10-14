@@ -30,6 +30,9 @@ public enum DurationComparison {
      * @return {@code true} if {@code actual} is strictly longer (or shorter) than {@code limit}; equal is neither
      */
     public boolean holds(long actual, long limit) {
-        return this == LONGER_THAN ? actual > limit : actual < limit;
+        return switch (this) {
+            case LONGER_THAN -> actual > limit;
+            case SHORTER_THAN -> actual < limit;
+        };
     }
 }

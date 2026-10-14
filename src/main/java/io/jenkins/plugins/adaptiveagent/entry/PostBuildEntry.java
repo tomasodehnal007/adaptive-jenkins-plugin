@@ -7,7 +7,7 @@ import io.jenkins.plugins.adaptiveagent.condition.Condition;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /** A task that runs after a build has finished on the agent. */
-public class PostBuildEntry extends BuildEntry {
+public final class PostBuildEntry extends BuildEntry {
 
     /**
      * Creates the entry; Jenkins calls this when the agent's configuration form is saved.

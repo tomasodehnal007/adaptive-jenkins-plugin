@@ -94,7 +94,7 @@ public class HistoryTimeCondition extends Condition {
 
     private long limitTimesQuantity() {
         try {
-            return Math.multiplyExact(unit.toMillis(time), (long) quantity);
+            return Math.multiplyExact(unit.toMillis(time), quantity);
         } catch (ArithmeticException e) {
             return Long.MAX_VALUE;
         }
