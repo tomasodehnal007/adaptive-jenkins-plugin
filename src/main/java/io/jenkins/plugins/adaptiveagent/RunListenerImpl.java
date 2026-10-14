@@ -21,11 +21,15 @@ import org.jspecify.annotations.NonNull;
  * Trigger for Freestyle builds: Jenkins calls this listener for every build of every job, and from
  * here we run the tasks configured on the agent the build runs on.
  *
+ * <p>It is registered with a large negative {@code ordinal}, so that Jenkins calls it after all other run
+ * listeners: the tasks run here can be disruptive or slow (cleaning the workspace, taking the agent offline,
+ * waiting for a reboot), and other listeners may still need the agent or the workspace.
+ *
  * <p>The only state is the timers of the during-build tasks, kept per build so that builds running
  * at the same time cannot touch each other's timers. Pipeline builds are not handled here, so they
  * are skipped.
  */
-@Extension
+@Extension(ordinal = -1000)
 public class RunListenerImpl extends RunListener<Run<?, ?>> {
 
     /** Timers of the during-build tasks of the builds that are running now, by build. */

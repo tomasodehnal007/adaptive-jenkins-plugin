@@ -36,10 +36,13 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner;
  * <p>Freestyle builds are not handled here (see {@link RunListenerImpl}); they are recognised by
  * the executable being the build itself.
  *
+ * <p>Like {@link RunListenerImpl} it is registered with a large negative {@code ordinal}, so that other executor
+ * listeners are called before the tasks, which may be disruptive or slow.
+ *
  * <p>The plugin therefore depends on the Pipeline API plugin ({@code workflow-api}), which is part of every
  * usual Jenkins installation.
  */
-@Extension
+@Extension(ordinal = -1000)
 public class PipelineExecutorListener implements ExecutorListener {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineExecutorListener.class.getName());
