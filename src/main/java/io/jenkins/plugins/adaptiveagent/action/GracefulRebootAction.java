@@ -10,6 +10,7 @@ import io.jenkins.plugins.adaptiveagent.Phase;
 import io.jenkins.plugins.adaptiveagent.TaskContext;
 import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
 import java.io.IOException;
+import java.time.Duration;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -21,8 +22,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class GracefulRebootAction extends RebootAction {
 
-    private static final long POLL_INTERVAL_MILLIS = 1_000;
-    private static final long MAX_WAIT_MILLIS = 30 * 60 * 1000;
+    private static final Duration POLL_INTERVAL = Duration.ofSeconds(1);
+    private static final Duration MAX_WAIT = Duration.ofMinutes(30);
 
     /**
      * Creates the action; Jenkins calls this when the agent's configuration form is saved.
@@ -45,16 +46,17 @@ public class GracefulRebootAction extends RebootAction {
      */
     @Override
     protected void waitBeforeReboot(TaskContext context) throws IOException, InterruptedException {
-        context.listener().getLogger().println("Waiting for the other builds on the agent to finish");
-        long deadline = System.currentTimeMillis() + MAX_WAIT_MILLIS;
+        context.listener().getLogger().println("[adaptive-agent] Waiting for the other builds on the agent to finish");
+        long deadline = System.nanoTime() + MAX_WAIT.toNanos();
         while (otherBuildsRunning(context.computer())) {
-            if (System.currentTimeMillis() > deadline) {
+            if (System.nanoTime() - deadline > 0) {
                 context.computer()
-                        .setTemporaryOfflineCause(new OfflineCause.ByCLI(
-                                "Reboot not done: other builds were still running after 30 minutes"));
+                        .setTemporaryOfflineCause(
+                                new OfflineCause.ByCLI("Reboot not done: other builds were still running after "
+                                        + MAX_WAIT.toMinutes() + " minutes"));
                 throw new AbortException("Other builds are still running on the agent, giving up the reboot");
             }
-            Thread.sleep(POLL_INTERVAL_MILLIS);
+            Thread.sleep(POLL_INTERVAL.toMillis());
         }
     }
 

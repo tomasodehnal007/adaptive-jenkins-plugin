@@ -12,7 +12,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * Action with a parameter: a Groovy script that runs <em>inside the agent's JVM</em> (like the
  * script console of the agent). Everything the script prints, and its result, goes into the build log.
- *
  */
 public class GroovyScriptAction extends Action {
 

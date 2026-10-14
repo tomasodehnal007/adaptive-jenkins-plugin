@@ -15,9 +15,9 @@ import java.util.logging.Logger;
  * Runs the entries configured on an agent: for each entry it evaluates the condition and, if it
  * passes, performs the action.
  *
- * <p>The runner keeps no state between calls (one instance is created per build), so builds running
- * at the same time on the same agent cannot interfere with each other. A failing condition or
- * action is reported in the build log and never stops the remaining entries.
+ * <p>The runner keeps no state between calls, so builds running at the same time on the same agent
+ * cannot interfere with each other. A failing condition or action is reported in the build log; the
+ * remaining entries still run, unless the failed entry is set to abort the build.
  */
 public final class ActionRunner {
 

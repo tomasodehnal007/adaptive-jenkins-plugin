@@ -11,7 +11,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Condition that holds when the last N finished builds on the agent (of any job) all failed.
- * Only Freestyle builds are counted, Pipeline builds are not seen (see {@link io.jenkins.plugins.adaptiveagent.util.BuildHistory}).
+ * Only Freestyle builds are counted, Pipeline builds are not seen (see {@link BuildHistory}).
  */
 public class HistoryFailedCondition extends Condition {
 

@@ -31,7 +31,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner;
  * twice, once for each agent.
  *
  * <p>Freestyle builds are not handled here (see {@link RunListenerImpl}); they are recognised by
- * the executable being the build itself.
+ * the executable having no parent build.
  *
  * <p>Like {@link RunListenerImpl} it is registered with a large negative {@code ordinal}, so that other executor
  * listeners are called before the tasks, which may be disruptive or slow.
@@ -126,9 +126,9 @@ public class PipelineExecutorListener implements ExecutorListener {
         if (executable == null) {
             return null;
         }
-        // For a node block the executable belongs to a build; for a Freestyle build it is the build itself.
+        // For a node block the executable belongs to a build; a Freestyle build has no parent.
         Queue.Executable parent = executable.getParentExecutable();
-        if (!(parent instanceof Run<?, ?> run) || parent == executable) {
+        if (!(parent instanceof Run<?, ?> run)) {
             return null;
         }
         Computer computer = executor.getOwner();

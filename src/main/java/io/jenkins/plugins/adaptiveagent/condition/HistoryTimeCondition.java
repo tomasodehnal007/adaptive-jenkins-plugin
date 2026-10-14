@@ -12,7 +12,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Condition on the average duration of the last N finished builds on the agent: longer or shorter than a limit.
- * Only Freestyle builds are counted, Pipeline builds are not seen (see {@link io.jenkins.plugins.adaptiveagent.util.BuildHistory}).
+ * Only Freestyle builds are counted, Pipeline builds are not seen (see {@link BuildHistory}).
  */
 public class HistoryTimeCondition extends Condition {
 

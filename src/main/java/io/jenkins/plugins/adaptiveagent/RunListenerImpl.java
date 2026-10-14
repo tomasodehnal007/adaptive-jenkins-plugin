@@ -1,5 +1,6 @@
 package io.jenkins.plugins.adaptiveagent;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
-import org.jspecify.annotations.NonNull;
 
 /**
  * Trigger for Freestyle builds: Jenkins calls this listener for every build of every job, and from
