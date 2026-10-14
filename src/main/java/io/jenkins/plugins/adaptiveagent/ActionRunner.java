@@ -1,5 +1,6 @@
 package io.jenkins.plugins.adaptiveagent;
 
+import hudson.AbortException;
 import hudson.model.Describable;
 import hudson.model.Node;
 import io.jenkins.plugins.adaptiveagent.action.Action;
@@ -151,9 +152,11 @@ public final class ActionRunner {
         context.listener().getLogger().println("[adaptive-agent] " + message);
     }
 
-    /** Writes the failure into the console log of the build and into the Jenkins log. */
+    /** Writes the failure into the console log of the build; unexpected failures also into the Jenkins log. */
     private void fail(String message, Exception e) {
         log(message + ": " + (e.getMessage() != null ? e.getMessage() : e.toString()));
-        LOGGER.log(Level.WARNING, message, e);
+        if (!(e instanceof AbortException)) {
+            LOGGER.log(Level.WARNING, message, e);
+        }
     }
 }
