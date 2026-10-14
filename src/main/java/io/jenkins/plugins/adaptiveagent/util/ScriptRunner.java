@@ -1,8 +1,11 @@
 package io.jenkins.plugins.adaptiveagent.util;
 
+import hudson.AbortException;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Node;
+import hudson.util.LineEndingConversion;
+import hudson.util.LineEndingConversion.EOLType;
 import io.jenkins.plugins.adaptiveagent.TaskContext;
 import java.io.IOException;
 
@@ -17,30 +20,49 @@ public final class ScriptRunner {
      * <p>The script runs in the build's workspace. Before the build (PRE_BUILD) Jenkins has not
      * allocated the workspace yet, so the script then runs in the agent's root directory instead.
      *
-     * <p>The script is handed to a real shell ({@code sh -c}, or {@code cmd /c} on Windows), so
-     * pipes, {@code ;} and multi-line scripts work. (On Windows only the first line is executed.)
+     * <p>Like the "Execute shell" and "Execute Windows batch command" build steps, the script is written
+     * into a temporary file in that directory and run by {@code sh} (or {@code cmd} on Windows), so pipes,
+     * {@code ;} and multi-line scripts work. The file is deleted afterwards.
      *
      * @param context the build and the agent to run the script on
      * @param script the text of the script
      * @return the exit code of the script
-     * @throws IOException if the process cannot be started
+     * @throws AbortException if the agent has no directory to run the script in
+     * @throws IOException if the script file cannot be written or the process cannot be started
      * @throws InterruptedException if the thread is interrupted while waiting for the script
      */
     public static int run(TaskContext context, String script) throws IOException, InterruptedException {
-        Launcher launcher = context.launcher();
-        String[] command = launcher.isUnix() ? new String[] {"sh", "-c", script} : new String[] {"cmd", "/c", script};
-
-        Launcher.ProcStarter starter = launcher.launch().cmds(command).stdout(context.listener());
         FilePath workingDirectory = context.workspace();
         if (workingDirectory == null) {
             Node node = context.computer().getNode();
             workingDirectory = node != null ? node.getRootPath() : null;
         }
-        if (workingDirectory != null) {
-            // On a brand-new agent the root directory is only created with the first workspace.
-            workingDirectory.mkdirs();
-            starter.pwd(workingDirectory);
+        if (workingDirectory == null) {
+            throw new AbortException("The agent has no directory to run the script in");
         }
-        return starter.join();
+        // On a brand-new agent the root directory is only created with the first workspace.
+        workingDirectory.mkdirs();
+
+        Launcher launcher = context.launcher();
+        boolean unix = launcher.isUnix();
+        FilePath file = unix
+                ? workingDirectory.createTextTempFile(
+                        "adaptive-agent", ".sh", LineEndingConversion.convertEOL(script, EOLType.Unix), false)
+                : workingDirectory.createTextTempFile(
+                        "adaptive-agent",
+                        ".bat",
+                        LineEndingConversion.convertEOL(script + "\r\nexit %ERRORLEVEL%", EOLType.Windows),
+                        false);
+        try {
+            String[] command =
+                    unix ? new String[] {"sh", file.getRemote()} : new String[] {"cmd", "/c", "call", file.getRemote()};
+            return launcher.launch()
+                    .cmds(command)
+                    .stdout(context.listener())
+                    .pwd(workingDirectory)
+                    .join();
+        } finally {
+            file.delete();
+        }
     }
 }
