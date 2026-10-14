@@ -3,6 +3,7 @@ package io.jenkins.plugins.adaptiveagent.action;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.AbortException;
 import hudson.Extension;
+import hudson.slaves.OfflineCause;
 import io.jenkins.plugins.adaptiveagent.Phase;
 import io.jenkins.plugins.adaptiveagent.TaskContext;
 import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
@@ -65,8 +66,8 @@ public class RebootAction extends Action {
     /**
      * {@inheritDoc}
      *
-     * @throws AbortException if the reboot command exits with a non-zero code, or if
-     *     {@link #waitBeforeReboot} gives up
+     * @throws AbortException if the reboot command exits with a non-zero code (the agent then stays offline
+     *     with a reason saying so), or if {@link #waitBeforeReboot} gives up
      * @throws IOException if the command cannot be started
      * @throws InterruptedException if the thread is interrupted while waiting
      */
@@ -77,6 +78,9 @@ public class RebootAction extends Action {
         int exitCode =
                 ScriptRunner.run(context, effectiveCommand(context.launcher().isUnix()));
         if (exitCode != 0) {
+            context.computer()
+                    .setTemporaryOfflineCause(
+                            new OfflineCause.ByCLI("Reboot not done: the reboot command exited with code " + exitCode));
             throw new AbortException("The reboot command exited with code " + exitCode);
         }
     }
