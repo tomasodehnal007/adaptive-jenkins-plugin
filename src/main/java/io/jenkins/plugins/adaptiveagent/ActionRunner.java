@@ -112,6 +112,7 @@ public final class ActionRunner {
                 log(entry.getPhase() + ": condition '" + conditionName + "' not met, skipping '" + actionName + "'");
                 return EntryResult.SKIPPED;
             }
+            log(entry.getPhase() + ": condition '" + conditionName + "' met");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log(entry.getPhase() + ": interrupted while evaluating condition '" + conditionName + "'");

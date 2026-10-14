@@ -89,6 +89,7 @@ class ActionRunnerTest {
 
         assertEquals(EntryResult.SUCCEEDED, result);
         assertEquals(1, action.runs.get());
+        assertTrue(log().contains("' met"), log());
         assertTrue(log().contains("running"), log());
         assertTrue(log().contains("finished"), log());
     }
