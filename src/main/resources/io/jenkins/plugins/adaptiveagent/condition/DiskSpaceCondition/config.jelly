@@ -4,6 +4,6 @@
     <f:number default="10" min="0"/>
   </f:entry>
   <f:entry title="Unit" field="unit">
-    <f:enum>${it.displayName}</f:enum>
+    <f:enum default="GIB">${it.displayName}</f:enum>
   </f:entry>
 </j:jelly>

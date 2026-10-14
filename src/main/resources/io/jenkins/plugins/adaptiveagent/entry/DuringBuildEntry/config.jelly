@@ -5,7 +5,7 @@
     <f:number default="10" min="1"/>
   </f:entry>
   <f:entry title="Time unit" field="unit">
-    <f:enum>${it.displayName}</f:enum>
+    <f:enum default="SECONDS">${it.displayName}</f:enum>
   </f:entry>
   <f:entry title="Repeat" field="repeat">
     <f:booleanRadio true="Keep checking until the build ends" false="Stop after the action has run once"/>

@@ -11,6 +11,6 @@
     <f:number default="1" min="0"/>
   </f:entry>
   <f:entry title="Time unit" field="unit">
-    <f:enum>${it.displayName}</f:enum>
+    <f:enum default="MINUTES">${it.displayName}</f:enum>
   </f:entry>
 </j:jelly>
