@@ -36,9 +36,10 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner;
  * <p>Freestyle builds are not handled here (see {@link RunListenerImpl}); they are recognised by
  * the executable being the build itself.
  *
- * <p>Marked {@code optional}: loaded only if the Pipeline plugins are installed.
+ * <p>The plugin therefore depends on the Pipeline API plugin ({@code workflow-api}), which is part of every
+ * usual Jenkins installation.
  */
-@Extension(optional = true)
+@Extension
 public class PipelineExecutorListener implements ExecutorListener {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineExecutorListener.class.getName());
