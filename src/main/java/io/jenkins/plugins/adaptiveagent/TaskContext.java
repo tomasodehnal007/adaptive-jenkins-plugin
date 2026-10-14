@@ -3,6 +3,7 @@ package io.jenkins.plugins.adaptiveagent;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.model.AbstractBuild;
 import hudson.model.Computer;
 import hudson.model.Job;
 import hudson.model.Node;
@@ -72,15 +73,20 @@ public record TaskContext(
      * Returns the workspace of the build, or, before Jenkins has allocated it, the directory where the
      * agent will put it. The directory may not exist yet.
      *
-     * <p>The default is the standard location for the job on the agent. A job with a custom workspace,
-     * or a workspace chosen inside a Pipeline, can use another one, which is known only once it is allocated.
+     * <p>The default is the standard location for the job on the agent. A job with a custom workspace can use
+     * another one, which is known only once it is allocated. In a Pipeline build the workspace of a
+     * {@code node} block is not known at all, so there is no default.
      *
-     * @return the workspace, or {@code null} if neither the build nor its agent and job are known
+     * @return the workspace, or {@code null} if neither the build nor its agent and job are known, or the
+     *     build is a Pipeline build
      */
     @CheckForNull
     public FilePath workspaceOrDefault() {
         if (workspace != null) {
             return workspace;
+        }
+        if (!(run instanceof AbstractBuild)) {
+            return null;
         }
         Node node = computer == null ? null : computer.getNode();
         Job<?, ?> job = run == null ? null : run.getParent();

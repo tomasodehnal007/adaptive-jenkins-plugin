@@ -1,5 +1,6 @@
 package io.jenkins.plugins.adaptiveagent.action;
 
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import io.jenkins.plugins.adaptiveagent.Phase;
@@ -24,17 +25,19 @@ public class CleanWorkspaceAction extends Action {
      *
      * <p>Works before the build too, when the workspace is not allocated yet: then the default location
      * of the workspace of the job is cleaned (see {@link TaskContext#workspaceOrDefault()}). A workspace
-     * that does not exist is not an error.
+     * that does not exist is not an error. In a Pipeline build the workspace is not known, so nothing is cleaned.
      *
+     * @throws AbortException if the workspace is not known, as in a Pipeline build
      * @throws IOException if a file cannot be deleted
      * @throws InterruptedException if the thread is interrupted while deleting
      */
     @Override
     public void runAction(TaskContext context) throws IOException, InterruptedException {
         FilePath workspace = context.workspaceOrDefault();
-        if (workspace != null) {
-            workspace.deleteContents();
+        if (workspace == null) {
+            throw new AbortException("The workspace is not known (not supported in Pipeline builds)");
         }
+        workspace.deleteContents();
     }
 
     /** Describes this action type; its display name is the item offered in the "Action" dropdown. */

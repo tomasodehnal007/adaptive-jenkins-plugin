@@ -2,18 +2,15 @@ package io.jenkins.plugins.adaptiveagent;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.Extension;
-import hudson.FilePath;
 import hudson.model.Computer;
 import hudson.model.Executor;
 import hudson.model.ExecutorListener;
-import hudson.model.Job;
 import hudson.model.Node;
 import hudson.model.OneOffExecutor;
 import hudson.model.Queue;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.model.TopLevelItem;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +60,7 @@ public class PipelineExecutorListener implements ExecutorListener {
      */
     @Override
     public void taskStarted(Executor executor, Queue.Task task) {
-        TaskContext context = contextOf(executor, false);
+        TaskContext context = contextOf(executor);
         if (context == null) {
             return;
         }
@@ -74,7 +71,7 @@ public class PipelineExecutorListener implements ExecutorListener {
             }
             return;
         }
-        List<ScheduledFuture<?>> futures = DuringBuildRunner.start(context, () -> contextOf(executor, true));
+        List<ScheduledFuture<?>> futures = DuringBuildRunner.start(context, () -> contextOf(executor));
         if (!futures.isEmpty()) {
             timers.put(executor, futures);
         }
@@ -107,7 +104,7 @@ public class PipelineExecutorListener implements ExecutorListener {
         if (futures != null) {
             futures.forEach(future -> future.cancel(true));
         }
-        TaskContext context = contextOf(executor, true);
+        TaskContext context = contextOf(executor);
         if (context != null) {
             new ActionRunner(context).run(Phase.POST_BUILD);
         }
@@ -117,13 +114,11 @@ public class PipelineExecutorListener implements ExecutorListener {
      * Describes the {@code node {}} block the executor is running.
      *
      * @param executor the executor that runs the task
-     * @param withWorkspace whether to look for the workspace of the block; it does not exist yet when the
-     *     block starts
      * @return the context, or {@code null} if the executor is running anything else (a Freestyle build, the
      *     Pipeline script itself on the controller, a plain task)
      */
     @CheckForNull
-    private static TaskContext contextOf(Executor executor, boolean withWorkspace) {
+    private static TaskContext contextOf(Executor executor) {
         if (executor instanceof OneOffExecutor) {
             return null; // the Pipeline script itself
         }
@@ -142,9 +137,8 @@ public class PipelineExecutorListener implements ExecutorListener {
             return null;
         }
         TaskListener listener = listenerOf(run);
-        FilePath workspace = withWorkspace ? existingWorkspace(node, run) : null;
         long startedAt = System.currentTimeMillis() - executor.getElapsedTime();
-        return new TaskContext(run, computer, node.createLauncher(listener), listener, workspace, startedAt);
+        return new TaskContext(run, computer, node.createLauncher(listener), listener, null, startedAt);
     }
 
     /** Returns the console log of the build, so that task output appears in it like for Freestyle builds. */
@@ -160,17 +154,5 @@ public class PipelineExecutorListener implements ExecutorListener {
             LOGGER.log(Level.WARNING, "Cannot open the log of " + run, e);
         }
         return TaskListener.NULL;
-    }
-
-    /** Returns the default workspace of the job on the node if it exists, otherwise {@code null}. */
-    @CheckForNull
-    private static FilePath existingWorkspace(Node node, Run<?, ?> run) {
-        try {
-            Job<?, ?> job = run.getParent();
-            FilePath workspace = job instanceof TopLevelItem item ? node.getWorkspaceFor(item) : null;
-            return workspace != null && workspace.exists() ? workspace : null;
-        } catch (IOException | InterruptedException e) {
-            return null;
-        }
     }
 }

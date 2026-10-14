@@ -4,8 +4,10 @@ import static io.jenkins.plugins.adaptiveagent.TestSupport.localContext;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import hudson.AbortException;
 import hudson.Launcher;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.adaptiveagent.Phase;
@@ -57,13 +59,13 @@ class CleanWorkspaceActionTest {
     }
 
     @Test
-    void nothingIsDeletedWhenTheWorkspaceIsUnknown() throws Exception {
+    void nothingIsDeletedAndTheReasonIsReportedWhenTheWorkspaceIsUnknown() throws Exception {
         Path somewhere = Files.createDirectories(tempDir.resolve("somewhere"));
         TaskListener listener = TaskListener.NULL;
         TaskContext withoutWorkspace =
                 new TaskContext(null, null, new Launcher.LocalLauncher(listener), listener, null);
 
-        new CleanWorkspaceAction().runAction(withoutWorkspace);
+        assertThrows(AbortException.class, () -> new CleanWorkspaceAction().runAction(withoutWorkspace));
 
         assertTrue(Files.exists(somewhere));
     }

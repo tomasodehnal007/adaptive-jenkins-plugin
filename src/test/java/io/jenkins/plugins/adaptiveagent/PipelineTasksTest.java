@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import hudson.model.Label;
 import hudson.model.Result;
 import hudson.slaves.DumbSlave;
+import io.jenkins.plugins.adaptiveagent.action.CleanWorkspaceAction;
 import io.jenkins.plugins.adaptiveagent.action.ShellScriptAction;
 import io.jenkins.plugins.adaptiveagent.action.StopBuildAction;
 import io.jenkins.plugins.adaptiveagent.condition.DurationCondition;
@@ -137,5 +138,16 @@ class PipelineTasksTest {
 
         assertEquals(0, countLines(JenkinsRule.getLog(shortBlock), "LONG_BLOCK"));
         assertEquals(1, countLines(JenkinsRule.getLog(longBlock), "LONG_BLOCK"));
+    }
+
+    /** The workspace of a node block is not known, so nothing is cleaned and no other workspace is touched. */
+    @Test
+    void cleanWorkspaceDoesNothingInPipeline(JenkinsRule jenkins) throws Exception {
+        DumbSlave agent = agent(jenkins, "agent-a", post(new NoCondition(), new CleanWorkspaceAction()));
+
+        WorkflowRun build = run(jenkins, "node('agent-a') { sh 'touch marker' }", Result.SUCCESS);
+
+        assertTrue(agent.getWorkspaceFor(build.getParent()).child("marker").exists());
+        assertTrue(JenkinsRule.getLog(build).contains("The workspace is not known"));
     }
 }
