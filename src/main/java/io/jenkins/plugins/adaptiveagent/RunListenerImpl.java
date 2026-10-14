@@ -6,7 +6,6 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Computer;
 import hudson.model.Environment;
-import hudson.model.Executor;
 import hudson.model.Node;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -36,47 +35,31 @@ public class RunListenerImpl extends RunListener<Run<?, ?>> {
     private final Map<Run<?, ?>, List<ScheduledFuture<?>>> timers = new ConcurrentHashMap<>();
 
     /**
-     * Called when the build starts: starts the timers of the DURING_BUILD entries of the agent.
-     *
-     * <p>The agent is taken from the executor, because the build does not know yet on which node it runs.
-     *
-     * @param run the build that has started
-     * @param listener writes into the console log of the build
-     */
-    @Override
-    public void onStarted(Run<?, ?> run, TaskListener listener) {
-        if (!(run instanceof AbstractBuild<?, ?> build)) {
-            return; // not a Freestyle build
-        }
-        Executor executor = build.getExecutor();
-        Computer computer = executor == null ? null : executor.getOwner();
-        Node node = computer == null ? null : computer.getNode();
-        if (node == null) {
-            return;
-        }
-        TaskContext first = new TaskContext(build, computer, node.createLauncher(listener), listener, null);
-        List<ScheduledFuture<?>> futures = DuringBuildRunner.start(
-                first,
-                () -> new TaskContext(build, computer, node.createLauncher(listener), listener, build.getWorkspace()));
-        if (!futures.isEmpty()) {
-            timers.put(build, futures);
-        }
-    }
-
-    /**
-     * Called just before the build steps run: runs the PRE_BUILD entries of the agent.
+     * Called just before the build steps run: runs the PRE_BUILD entries of the agent, then starts the
+     * timers of its DURING_BUILD entries.
      *
      * @param build the build that is about to run its steps
      * @param launcher starts processes on the agent
      * @param listener writes into the console log of the build
      * @return an environment that changes nothing
      * @throws Run.RunnerAbortedException (unchecked) if a task that is set to abort the build failed; Jenkins
-     *     then stops the build and marks it as failed
+     *     then stops the build and marks it as failed, and no during-build timers are started
      */
     @Override
     public Environment setUpEnvironment(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        if (runEntries(Phase.PRE_BUILD, build, launcher, listener)) {
+        Node node = build.getBuiltOn();
+        Computer computer = node == null ? null : node.toComputer();
+        if (computer == null) {
+            return new Environment() {};
+        }
+        TaskContext context = new TaskContext(build, computer, launcher, listener, build.getWorkspace());
+        if (new ActionRunner(context).run(Phase.PRE_BUILD)) {
             throw new Run.RunnerAbortedException();
+        }
+        List<ScheduledFuture<?>> futures = DuringBuildRunner.start(
+                context, () -> new TaskContext(build, computer, launcher, listener, build.getWorkspace()));
+        if (!futures.isEmpty()) {
+            timers.put(build, futures);
         }
         return new Environment() {};
     }
@@ -98,24 +81,12 @@ public class RunListenerImpl extends RunListener<Run<?, ?>> {
             return; // not a Freestyle build
         }
         Node node = build.getBuiltOn();
-        if (node == null) {
-            return;
-        }
-        runEntries(Phase.POST_BUILD, build, node.createLauncher(listener), listener);
-    }
-
-    /**
-     * Runs the entries of the given phase configured on the agent the build runs on.
-     *
-     * @return {@code true} if the build should be aborted
-     */
-    private boolean runEntries(Phase phase, AbstractBuild<?, ?> build, Launcher launcher, TaskListener listener) {
-        Node node = build.getBuiltOn();
         Computer computer = node == null ? null : node.toComputer();
         if (computer == null) {
-            return false;
+            return;
         }
-        TaskContext context = new TaskContext(build, computer, launcher, listener, build.getWorkspace());
-        return new ActionRunner(context).run(phase);
+        TaskContext context =
+                new TaskContext(build, computer, node.createLauncher(listener), listener, build.getWorkspace());
+        new ActionRunner(context).run(Phase.POST_BUILD);
     }
 }
