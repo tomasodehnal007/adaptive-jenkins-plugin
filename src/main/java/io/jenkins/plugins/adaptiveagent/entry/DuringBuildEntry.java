@@ -21,7 +21,6 @@ public final class DuringBuildEntry extends BuildEntry {
     private final boolean repeat;
 
     /**
-     * Creates the entry; Jenkins calls this when the agent's configuration form is saved.
      * The parameter names must match the field names in {@code config.jelly}.
      *
      * @param interval how often the condition is checked, in {@code unit}
@@ -39,20 +38,10 @@ public final class DuringBuildEntry extends BuildEntry {
         this.repeat = repeat;
     }
 
-    /**
-     * Returns how often the condition is checked; the form shows it in the "Check every" field.
-     *
-     * @return the interval, in {@link #getUnit()}
-     */
     public long getInterval() {
         return interval;
     }
 
-    /**
-     * Returns the unit of the interval.
-     *
-     * @return the unit
-     */
     public IntervalUnit getUnit() {
         return unit;
     }
@@ -67,31 +56,15 @@ public final class DuringBuildEntry extends BuildEntry {
         return repeat;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link Phase#DURING_BUILD}
-     */
     @Override
     public Phase getPhase() {
         return Phase.DURING_BUILD;
     }
 
-    /**
-     * Describes this entry type; its display name is the item offered in the "Add task" menu. The ordinal puts
-     * it in the menu in the order of the build: before, during, after.
-     */
+    /** The ordinal puts it in the "Add task" menu in the order of the build: before, during, after. */
     @Extension(ordinal = 2)
     public static class DescriptorImpl extends BuildEntryDescriptor {
 
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
-
-        /**
-         * {@inheritDoc}
-         *
-         * @return {@link Phase#DURING_BUILD}
-         */
         @Override
         public Phase getPhase() {
             return Phase.DURING_BUILD;

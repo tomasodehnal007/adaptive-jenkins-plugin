@@ -18,8 +18,6 @@ public class GroovyScriptAction extends Action {
     private final String scriptText;
 
     /**
-     * Creates the action; Jenkins calls this when the agent's configuration form is saved.
-     *
      * @param scriptText the Groovy script, as typed into the form
      */
     @DataBoundConstructor
@@ -27,11 +25,6 @@ public class GroovyScriptAction extends Action {
         this.scriptText = scriptText;
     }
 
-    /**
-     * Returns the script to run; the form shows it in the "Script" field.
-     *
-     * @return the Groovy script
-     */
     public String getScriptText() {
         return scriptText;
     }
@@ -55,12 +48,8 @@ public class GroovyScriptAction extends Action {
         context.listener().getLogger().print(output);
     }
 
-    /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
     @Extension(ordinal = 90)
     public static final class DescriptorImpl extends TaskDescriptor<Action> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

@@ -15,11 +15,6 @@ public enum SizeUnit {
         this.bytes = bytes;
     }
 
-    /**
-     * Returns the text shown in the form.
-     *
-     * @return the name of the unit
-     */
     public String getDisplayName() {
         return displayName;
     }

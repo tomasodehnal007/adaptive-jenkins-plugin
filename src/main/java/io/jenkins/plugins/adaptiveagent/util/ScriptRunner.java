@@ -21,8 +21,9 @@ public final class ScriptRunner {
      * allocated the workspace yet, so the script then runs in the agent's root directory instead.
      *
      * <p>Like the "Execute shell" and "Execute Windows batch command" build steps, the script is written
-     * into a temporary file in that directory and run by {@code sh} (or {@code cmd} on Windows), so pipes,
-     * {@code ;} and multi-line scripts work. The file is deleted afterwards.
+     * into a temporary file in the agent's temporary directory and run by {@code sh} (or {@code cmd} on
+     * Windows) in the working directory above, so pipes, {@code ;} and multi-line scripts work. The file is
+     * deleted afterwards.
      *
      * @param context the build and the agent to run the script on
      * @param script the text of the script

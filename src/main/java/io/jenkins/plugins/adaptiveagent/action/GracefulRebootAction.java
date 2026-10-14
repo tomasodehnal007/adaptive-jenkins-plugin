@@ -26,8 +26,6 @@ public class GracefulRebootAction extends RebootAction {
     private static final Duration MAX_WAIT = Duration.ofMinutes(30);
 
     /**
-     * Creates the action; Jenkins calls this when the agent's configuration form is saved.
-     *
      * @param command the command that reboots the machine, or {@code null} or blank for the default
      *     of the agent's operating system
      */
@@ -71,12 +69,8 @@ public class GracefulRebootAction extends RebootAction {
         return false;
     }
 
-    /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
     @Extension(ordinal = 40)
     public static final class DescriptorImpl extends TaskDescriptor<Action> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

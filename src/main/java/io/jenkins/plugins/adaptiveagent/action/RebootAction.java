@@ -30,8 +30,6 @@ public class RebootAction extends Action {
     private final String command;
 
     /**
-     * Creates the action; Jenkins calls this when the agent's configuration form is saved.
-     *
      * @param command the command that reboots the machine, or {@code null} or blank for the default
      *     of the agent's operating system
      */
@@ -96,12 +94,8 @@ public class RebootAction extends Action {
      */
     protected void waitBeforeReboot(TaskContext context) throws IOException, InterruptedException {}
 
-    /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
     @Extension(ordinal = 50)
     public static final class DescriptorImpl extends TaskDescriptor<Action> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

@@ -13,11 +13,6 @@ public enum DurationComparison {
         this.displayName = displayName;
     }
 
-    /**
-     * Returns the text shown in the form.
-     *
-     * @return the name of the comparison
-     */
     public String getDisplayName() {
         return displayName;
     }

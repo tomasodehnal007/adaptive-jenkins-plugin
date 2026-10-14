@@ -19,8 +19,6 @@ public class DurationCondition extends Condition {
     private final IntervalUnit unit;
 
     /**
-     * Creates the condition; Jenkins calls this when the agent's configuration form is saved.
-     *
      * @param comparison whether the build must be longer or shorter than {@code time}
      * @param time the limit, in {@code unit}
      * @param unit the unit of {@code time}
@@ -32,29 +30,14 @@ public class DurationCondition extends Condition {
         this.unit = unit;
     }
 
-    /**
-     * Returns whether the build must be longer or shorter than the limit.
-     *
-     * @return the comparison
-     */
     public DurationComparison getComparison() {
         return comparison;
     }
 
-    /**
-     * Returns the limit; the form shows it in the "Duration" field.
-     *
-     * @return the limit, in {@link #getUnit()}
-     */
     public long getTime() {
         return time;
     }
 
-    /**
-     * Returns the unit of the limit.
-     *
-     * @return the unit
-     */
     public IntervalUnit getUnit() {
         return unit;
     }
@@ -82,12 +65,8 @@ public class DurationCondition extends Condition {
         return holdsFor(context.elapsedMillis());
     }
 
-    /** Describes this condition type; it is offered in the "Condition" dropdown only after the build. */
     @Extension(ordinal = 80)
     public static final class DescriptorImpl extends TaskDescriptor<Condition> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

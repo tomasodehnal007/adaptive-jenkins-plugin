@@ -18,8 +18,6 @@ public class HistoryFailedCondition extends Condition {
     private final int quantity;
 
     /**
-     * Creates the condition; Jenkins calls this when the agent's configuration form is saved.
-     *
      * @param quantity how many of the latest builds on the agent must have failed
      */
     @DataBoundConstructor
@@ -27,11 +25,6 @@ public class HistoryFailedCondition extends Condition {
         this.quantity = quantity;
     }
 
-    /**
-     * Returns how many of the latest builds must have failed.
-     *
-     * @return the number of builds
-     */
     public int getQuantity() {
         return quantity;
     }
@@ -65,12 +58,8 @@ public class HistoryFailedCondition extends Condition {
         return holdsFor(results);
     }
 
-    /** Describes this condition type; its display name is the item offered in the "Condition" dropdown. */
     @Extension(ordinal = 50)
     public static final class DescriptorImpl extends TaskDescriptor<Condition> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

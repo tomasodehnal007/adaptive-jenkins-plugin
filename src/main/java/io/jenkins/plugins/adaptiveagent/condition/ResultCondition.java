@@ -20,7 +20,6 @@ public class ResultCondition extends Condition {
     private final boolean notBuilt;
 
     /**
-     * Creates the condition; Jenkins calls this when the agent's configuration form is saved.
      * The parameter names must match the field names in {@code config.jelly}.
      *
      * @param success passes when the build succeeded
@@ -38,47 +37,22 @@ public class ResultCondition extends Condition {
         this.notBuilt = notBuilt;
     }
 
-    /**
-     * Returns whether the condition passes for a successful build.
-     *
-     * @return {@code true} if ticked in the form
-     */
     public boolean isSuccess() {
         return success;
     }
 
-    /**
-     * Returns whether the condition passes for a failed build.
-     *
-     * @return {@code true} if ticked in the form
-     */
     public boolean isFailure() {
         return failure;
     }
 
-    /**
-     * Returns whether the condition passes for an aborted build.
-     *
-     * @return {@code true} if ticked in the form
-     */
     public boolean isAborted() {
         return aborted;
     }
 
-    /**
-     * Returns whether the condition passes for an unstable build.
-     *
-     * @return {@code true} if ticked in the form
-     */
     public boolean isUnstable() {
         return unstable;
     }
 
-    /**
-     * Returns whether the condition passes for a build that was not built.
-     *
-     * @return {@code true} if ticked in the form
-     */
     public boolean isNotBuilt() {
         return notBuilt;
     }
@@ -103,12 +77,8 @@ public class ResultCondition extends Condition {
                 || (notBuilt && result == Result.NOT_BUILT);
     }
 
-    /** Describes this condition type; it is offered in the "Condition" dropdown only after the build. */
     @Extension(ordinal = 90)
     public static final class DescriptorImpl extends TaskDescriptor<Condition> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

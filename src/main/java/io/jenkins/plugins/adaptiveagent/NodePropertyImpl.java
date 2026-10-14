@@ -42,12 +42,8 @@ public final class NodePropertyImpl extends NodeProperty<Node> {
         return entries == null ? List.of() : Collections.unmodifiableList(entries);
     }
 
-    /** Describes this property; its display name is the section title on the agent's Configure page. */
     @Extension
     public static final class DescriptorImpl extends NodePropertyDescriptor {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

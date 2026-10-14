@@ -14,8 +14,6 @@ public class ShellScriptAction extends Action {
     private final String scriptText;
 
     /**
-     * Creates the action; Jenkins calls this when the agent's configuration form is saved.
-     *
      * @param scriptText the text of the script, as typed into the form
      */
     @DataBoundConstructor
@@ -23,11 +21,6 @@ public class ShellScriptAction extends Action {
         this.scriptText = scriptText;
     }
 
-    /**
-     * Returns the script to run; the form shows it in the "Script" field.
-     *
-     * @return the text of the script
-     */
     public String getScriptText() {
         return scriptText;
     }
@@ -48,12 +41,8 @@ public class ShellScriptAction extends Action {
         }
     }
 
-    /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
     @Extension(ordinal = 100)
     public static final class DescriptorImpl extends TaskDescriptor<Action> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

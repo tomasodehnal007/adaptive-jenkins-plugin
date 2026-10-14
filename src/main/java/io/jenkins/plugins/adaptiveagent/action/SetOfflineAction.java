@@ -13,7 +13,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class SetOfflineAction extends Action {
 
-    /** Creates the action; Jenkins calls this when the agent's configuration form is saved. */
     @DataBoundConstructor
     public SetOfflineAction() {}
 
@@ -40,12 +39,8 @@ public class SetOfflineAction extends Action {
         computer.setTemporaryOfflineCause(new OfflineCause.ByCLI(message));
     }
 
-    /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
     @Extension(ordinal = 60)
     public static final class DescriptorImpl extends TaskDescriptor<Action> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

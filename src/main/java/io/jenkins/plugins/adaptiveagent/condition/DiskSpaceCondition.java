@@ -17,8 +17,6 @@ public class DiskSpaceCondition extends Condition {
     private final SizeUnit unit;
 
     /**
-     * Creates the condition; Jenkins calls this when the agent's configuration form is saved.
-     *
      * @param space the threshold, in {@code unit}
      * @param unit the unit of {@code space}
      */
@@ -28,20 +26,10 @@ public class DiskSpaceCondition extends Condition {
         this.unit = unit;
     }
 
-    /**
-     * Returns the threshold; the form shows it in the "Free space less than" field.
-     *
-     * @return the threshold, in {@link #getUnit()}
-     */
     public long getSpace() {
         return space;
     }
 
-    /**
-     * Returns the unit of the threshold.
-     *
-     * @return the unit
-     */
     public SizeUnit getUnit() {
         return unit;
     }
@@ -76,12 +64,8 @@ public class DiskSpaceCondition extends Condition {
         return holdsFor(root.getUsableDiskSpace());
     }
 
-    /** Describes this condition type; its display name is the item offered in the "Condition" dropdown. */
     @Extension(ordinal = 60)
     public static final class DescriptorImpl extends TaskDescriptor<Condition> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

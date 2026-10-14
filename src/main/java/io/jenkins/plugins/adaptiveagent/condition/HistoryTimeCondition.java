@@ -22,8 +22,6 @@ public class HistoryTimeCondition extends Condition {
     private final IntervalUnit unit;
 
     /**
-     * Creates the condition; Jenkins calls this when the agent's configuration form is saved.
-     *
      * @param quantity how many of the latest builds on the agent are averaged
      * @param comparison whether the average must be longer or shorter than {@code time}
      * @param time the limit of the average, in {@code unit}
@@ -37,38 +35,18 @@ public class HistoryTimeCondition extends Condition {
         this.unit = unit;
     }
 
-    /**
-     * Returns how many of the latest builds are averaged.
-     *
-     * @return the number of builds
-     */
     public int getQuantity() {
         return quantity;
     }
 
-    /**
-     * Returns whether the average must be longer or shorter than the limit.
-     *
-     * @return the comparison
-     */
     public DurationComparison getComparison() {
         return comparison;
     }
 
-    /**
-     * Returns the limit of the average; the form shows it in the "Duration" field.
-     *
-     * @return the limit, in {@link #getUnit()}
-     */
     public long getTime() {
         return time;
     }
 
-    /**
-     * Returns the unit of the limit.
-     *
-     * @return the unit
-     */
     public IntervalUnit getUnit() {
         return unit;
     }
@@ -115,12 +93,8 @@ public class HistoryTimeCondition extends Condition {
         return holdsFor(durations);
     }
 
-    /** Describes this condition type; its display name is the item offered in the "Condition" dropdown. */
     @Extension(ordinal = 40)
     public static final class DescriptorImpl extends TaskDescriptor<Condition> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

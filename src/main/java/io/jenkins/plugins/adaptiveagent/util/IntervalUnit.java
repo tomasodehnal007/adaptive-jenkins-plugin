@@ -19,11 +19,6 @@ public enum IntervalUnit {
         this.timeUnit = timeUnit;
     }
 
-    /**
-     * Returns the text shown in the form.
-     *
-     * @return the name of the unit
-     */
     public String getDisplayName() {
         return displayName;
     }

@@ -16,7 +16,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class CleanWorkspaceAction extends Action {
 
-    /** Creates the action; Jenkins calls this when the agent's configuration form is saved. */
     @DataBoundConstructor
     public CleanWorkspaceAction() {}
 
@@ -40,12 +39,8 @@ public class CleanWorkspaceAction extends Action {
         workspace.deleteContents();
     }
 
-    /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
     @Extension(ordinal = 80)
     public static final class DescriptorImpl extends TaskDescriptor<Action> {
-
-        /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
-        public DescriptorImpl() {}
 
         @Override
         public String getDisplayName() {

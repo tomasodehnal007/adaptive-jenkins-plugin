@@ -30,20 +30,10 @@ public abstract sealed class BuildEntry implements Describable<BuildEntry>
         this.action = action;
     }
 
-    /**
-     * Returns the condition that decides whether the action runs.
-     *
-     * @return the condition
-     */
     public Condition getCondition() {
         return condition;
     }
 
-    /**
-     * Returns what is done on the agent when the condition holds.
-     *
-     * @return the action
-     */
     public Action getAction() {
         return action;
     }
