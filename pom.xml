@@ -15,7 +15,7 @@
   <packaging>hpi</packaging>
 
   <name>Adaptive Jenkins Agent</name>
-  <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+  <url>https://github.com/${gitHubRepo}</url>
   <licenses>
     <license>
       <name>MIT License</name>
@@ -36,7 +36,7 @@
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
     <jenkins.baseline>2.580</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.1</jenkins.version>
-    <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
+    <gitHubRepo>tomasodehnal007/${project.artifactId}</gitHubRepo>
 
     <spotless.check.skip>false</spotless.check.skip>
     <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
