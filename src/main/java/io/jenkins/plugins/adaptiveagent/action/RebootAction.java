@@ -93,7 +93,7 @@ public class RebootAction extends Action {
     protected void waitBeforeReboot(TaskContext context) throws IOException, InterruptedException {}
 
     /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
-    @Extension
+    @Extension(ordinal = 50)
     public static final class DescriptorImpl extends TaskDescriptor<Action> {
 
         /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */

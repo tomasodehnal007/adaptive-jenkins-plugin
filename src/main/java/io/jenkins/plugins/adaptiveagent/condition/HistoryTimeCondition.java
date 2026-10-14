@@ -116,7 +116,7 @@ public class HistoryTimeCondition extends Condition {
     }
 
     /** Describes this condition type; its display name is the item offered in the "Condition" dropdown. */
-    @Extension
+    @Extension(ordinal = 40)
     public static final class DescriptorImpl extends TaskDescriptor<Condition> {
 
         /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */

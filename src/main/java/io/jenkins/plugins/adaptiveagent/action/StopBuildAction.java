@@ -39,7 +39,7 @@ public class StopBuildAction extends Action {
     }
 
     /** Describes this action type; its display name is the item offered in the "Action" dropdown. */
-    @Extension
+    @Extension(ordinal = 70)
     public static final class DescriptorImpl extends TaskDescriptor<Action> {
 
         /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */

@@ -83,7 +83,7 @@ public class DurationCondition extends Condition {
     }
 
     /** Describes this condition type; it is offered in the "Condition" dropdown only after the build. */
-    @Extension
+    @Extension(ordinal = 80)
     public static final class DescriptorImpl extends TaskDescriptor<Condition> {
 
         /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */

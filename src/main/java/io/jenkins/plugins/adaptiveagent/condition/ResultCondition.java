@@ -104,7 +104,7 @@ public class ResultCondition extends Condition {
     }
 
     /** Describes this condition type; it is offered in the "Condition" dropdown only after the build. */
-    @Extension
+    @Extension(ordinal = 90)
     public static final class DescriptorImpl extends TaskDescriptor<Condition> {
 
         /** Creates the descriptor; Jenkins creates the single instance because of {@link Extension}. */
