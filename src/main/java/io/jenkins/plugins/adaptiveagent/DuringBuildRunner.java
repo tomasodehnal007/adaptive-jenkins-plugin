@@ -39,13 +39,17 @@ final class DuringBuildRunner {
     static List<ScheduledFuture<?>> start(TaskContext first, Supplier<TaskContext> contexts) {
         List<ScheduledFuture<?>> futures = new ArrayList<>();
         for (BuildEntry entry : new ActionRunner(first).entriesOf(Phase.DURING_BUILD)) {
-            DuringBuildEntry duringEntry = (DuringBuildEntry) entry;
-            if (duringEntry.getUnit() == null) {
-                continue; // incomplete configuration
+            if (!(entry instanceof DuringBuildEntry duringEntry)) {
+                continue; // another entry type, it has no interval
             }
-            long period = duringEntry.getUnit().toMillis(duringEntry.getInterval());
+            long period =
+                    duringEntry.getUnit() == null ? 0 : duringEntry.getUnit().toMillis(duringEntry.getInterval());
             if (period <= 0) {
-                continue; // nonsensical interval, nothing sensible to schedule
+                first.listener()
+                        .getLogger()
+                        .println("[adaptive-agent] " + Phase.DURING_BUILD
+                                + ": skipping a task without a valid interval, it is never checked");
+                continue;
             }
             Runnable check = checkOf(duringEntry, contexts);
             futures.add(Timer.get().scheduleWithFixedDelay(check, period, period, TimeUnit.MILLISECONDS));
