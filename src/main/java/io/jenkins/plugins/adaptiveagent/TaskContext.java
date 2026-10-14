@@ -89,7 +89,7 @@ public record TaskContext(
             return null;
         }
         Node node = computer == null ? null : computer.getNode();
-        Job<?, ?> job = run == null ? null : run.getParent();
+        Job<?, ?> job = run.getParent();
         if (node != null && job instanceof TopLevelItem item) {
             return node.getWorkspaceFor(item);
         }
