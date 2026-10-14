@@ -1,4 +1,6 @@
 <?jelly escape-by-default='true'?>
 <div>
-    Lets you configure tasks that run on a specific agent before, during or after any build it executes.
+    Run administrative, maintenance, setup or cleanup tasks on a specific agent every time it
+    executes a build, whatever the build is. Tasks are configured on the agent itself, not in a
+    job, and can run before, during or after the build, optionally only when a condition holds.
 </div>
