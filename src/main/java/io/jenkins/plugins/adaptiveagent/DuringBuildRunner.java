@@ -28,7 +28,8 @@ final class DuringBuildRunner {
 
     /**
      * Starts a timer for every during-build entry configured on the agent. The first check of an entry
-     * comes after one interval; the start of the build is covered by the before-build entries.
+     * comes after one interval; the start of the build is covered by the before-build entries. Each next
+     * check comes one interval after the previous one has finished, so a slow check never runs back to back.
      *
      * @param first a context used only to find the entries of the agent
      * @param contexts creates a fresh context for every check, so that e.g. the workspace is found once
@@ -47,7 +48,7 @@ final class DuringBuildRunner {
                 continue; // nonsensical interval, nothing sensible to schedule
             }
             Runnable check = checkOf(duringEntry, contexts);
-            futures.add(Timer.get().scheduleAtFixedRate(check, period, period, TimeUnit.MILLISECONDS));
+            futures.add(Timer.get().scheduleWithFixedDelay(check, period, period, TimeUnit.MILLISECONDS));
         }
         return futures;
     }
