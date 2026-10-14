@@ -5,6 +5,7 @@ import hudson.AbortException;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Executor;
+import hudson.slaves.OfflineCause;
 import io.jenkins.plugins.adaptiveagent.Phase;
 import io.jenkins.plugins.adaptiveagent.TaskContext;
 import io.jenkins.plugins.adaptiveagent.TaskDescriptor;
@@ -48,6 +49,9 @@ public class GracefulRebootAction extends RebootAction {
         long deadline = System.currentTimeMillis() + MAX_WAIT_MILLIS;
         while (otherBuildsRunning(context.computer())) {
             if (System.currentTimeMillis() > deadline) {
+                context.computer()
+                        .setTemporaryOfflineCause(new OfflineCause.ByCLI(
+                                "Reboot not done: other builds were still running after 30 minutes"));
                 throw new AbortException("Other builds are still running on the agent, giving up the reboot");
             }
             Thread.sleep(POLL_INTERVAL_MILLIS);
