@@ -69,7 +69,9 @@ public class PipelineExecutorListener implements ExecutorListener {
         }
         if (new ActionRunner(context).run(Phase.PRE_BUILD)) {
             Executor buildExecutor = context.run().getExecutor();
-            (buildExecutor != null ? buildExecutor : executor).interrupt(Result.FAILURE);
+            if (buildExecutor != null) {
+                buildExecutor.interrupt(Result.FAILURE);
+            }
             return;
         }
         List<ScheduledFuture<?>> futures = DuringBuildRunner.start(context, () -> contextOf(executor, true));
