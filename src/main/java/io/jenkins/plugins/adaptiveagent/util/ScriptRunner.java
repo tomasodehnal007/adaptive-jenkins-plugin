@@ -21,9 +21,10 @@ public final class ScriptRunner {
      * allocated the workspace yet, so the script then runs in the agent's root directory instead.
      *
      * <p>Like the "Execute shell" and "Execute Windows batch command" build steps, the script is written
-     * into a temporary file in the agent's temporary directory and run by {@code sh} (or {@code cmd} on
-     * Windows) in the working directory above, so pipes, {@code ;} and multi-line scripts work. The file is
-     * deleted afterwards.
+     * into a temporary file in the agent's temporary directory and run by {@code sh -xe} (or {@code cmd} on
+     * Windows) in the working directory above, so pipes, {@code ;} and multi-line scripts work. On Unix, as in
+     * "Execute shell", every command is printed before it runs and the script stops at the first failing
+     * command. The file is deleted afterwards.
      *
      * @param context the build and the agent to run the script on
      * @param script the text of the script
@@ -55,8 +56,9 @@ public final class ScriptRunner {
                         LineEndingConversion.convertEOL(script + "\r\nexit %ERRORLEVEL%", EOLType.Windows),
                         false);
         try {
-            String[] command =
-                    unix ? new String[] {"sh", file.getRemote()} : new String[] {"cmd", "/c", "call", file.getRemote()};
+            String[] command = unix
+                    ? new String[] {"sh", "-xe", file.getRemote()}
+                    : new String[] {"cmd", "/c", "call", file.getRemote()};
             return launcher.launch()
                     .cmds(command)
                     .stdout(context.listener())
