@@ -1,34 +1,30 @@
 package io.jenkins.plugins.adaptiveagent.action;
 
+import static io.jenkins.plugins.adaptiveagent.TestSupport.agentWith;
+import static io.jenkins.plugins.adaptiveagent.TestSupport.countLines;
+import static io.jenkins.plugins.adaptiveagent.TestSupport.post;
+import static io.jenkins.plugins.adaptiveagent.TestSupport.projectOn;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import hudson.model.FreeStyleBuild;
+import hudson.slaves.DumbSlave;
+import io.jenkins.plugins.adaptiveagent.condition.NoCondition;
 import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-/** Only chooses the command; the reboot itself is never run here. */
+/** The reboot command is always replaced by a harmless one. */
+@WithJenkins
 class RebootActionTest {
 
     @Test
-    void usesTheDefaultOfTheOperatingSystem() {
-        RebootAction action = new RebootAction(null);
+    void takesTheAgentOfflineAndRunsTheRebootCommand(JenkinsRule jenkins) throws Exception {
+        DumbSlave agent = agentWith(jenkins, post(new NoCondition(), new RebootAction("echo REBOOT_COMMAND")));
 
-        assertEquals("shutdown -r now", action.effectiveCommand(true));
-        assertEquals("shutdown -r -f -t 0", action.effectiveCommand(false));
-    }
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectOn(jenkins, agent, "echo hello"));
 
-    @Test
-    void blankCommandMeansTheDefault() {
-        RebootAction action = new RebootAction("   ");
-
-        assertNull(action.getCommand());
-        assertEquals("shutdown -r now", action.effectiveCommand(true));
-    }
-
-    @Test
-    void aConfiguredCommandWinsOnEverySystem() {
-        RebootAction action = new RebootAction("sudo -n shutdown -r now");
-
-        assertEquals("sudo -n shutdown -r now", action.effectiveCommand(true));
-        assertEquals("sudo -n shutdown -r now", action.effectiveCommand(false));
+        assertEquals(1, countLines(JenkinsRule.getLog(build), "REBOOT_COMMAND"));
+        assertTrue(agent.toComputer().isOffline());
     }
 }

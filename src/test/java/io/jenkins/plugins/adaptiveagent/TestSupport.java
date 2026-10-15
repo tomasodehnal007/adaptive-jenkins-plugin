@@ -1,11 +1,14 @@
 package io.jenkins.plugins.adaptiveagent;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.Label;
 import hudson.model.Result;
 import hudson.model.TaskListener;
 import hudson.slaves.DumbSlave;
@@ -31,7 +34,15 @@ public final class TestSupport {
 
     /** An online agent that has the given entries configured. */
     public static DumbSlave agentWith(JenkinsRule jenkins, BuildEntry... entries) throws Exception {
-        DumbSlave agent = jenkins.createOnlineSlave();
+        return withEntries(jenkins.createOnlineSlave(), entries);
+    }
+
+    /** An online agent with the given label that has the given entries configured. */
+    public static DumbSlave agentWith(JenkinsRule jenkins, String label, BuildEntry... entries) throws Exception {
+        return withEntries(jenkins.createOnlineSlave(Label.get(label)), entries);
+    }
+
+    private static DumbSlave withEntries(DumbSlave agent, BuildEntry... entries) throws Exception {
         agent.setNodeProperties(List.of(new NodePropertyImpl(List.of(entries))));
         return agent;
     }
@@ -63,6 +74,16 @@ public final class TestSupport {
     /** Number of lines of the log that are exactly {@code line} (the output of an echo, not the command line). */
     public static long countLines(String log, String line) {
         return log.lines().filter(line::equals).count();
+    }
+
+    /** Asserts that the lines (each on a line of its own) appear in the log in this order. */
+    public static void assertInOrder(String log, String... lines) {
+        int from = 0;
+        for (String line : lines) {
+            int at = log.indexOf("\n" + line + "\n", from);
+            assertTrue(at >= 0, "expected '" + line + "' after position " + from + " in:\n" + log);
+            from = at + 1;
+        }
     }
 
     /**
